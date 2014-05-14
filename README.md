@@ -1,2 +1,1 @@
-fishpond-starter-kit
-====================
+# Fishpond Starter Kit
