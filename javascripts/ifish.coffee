@@ -6,8 +6,6 @@ root = exports ? this
 #
 # @options: Contain configuration to override convention.
 #
-# TODO Florian Document! If IFish gets nothing, it will try to gather the config itself.
-#
 class root.IFish
   constructor: (fishpond_or_options, options = {}) ->
 
@@ -18,24 +16,22 @@ class root.IFish
     #  * Callbacks
     #  * System options (not documented to users).
     #
-    # TODO Florian:
-    #   Be explicit regarding "Selector", "Callback" or not? E.g. containerSelector, resultsUpdatedCallback. Ask Nicholas.
-    #
     @options = {
-      container: 'section#query',
-      resultsList: '#results ul',
-      fishSelector: 'li',
+      containerSelector: 'section#query', # Selector for the container surrounding the iFish elements.
+      resultsSelector: '#results ul', # Selector for the results list.
+      controlsSelector: '#fish', # Selector for the HTML element containing iFish controls.
+      searchSelector: '#search', # Selector for the HTML element containing the search field.
+      favoritesSelector: '#favorites', # Selector for the HTML element containing the favorites.
+      fishSelector: 'li', # Selector for the fish inside the results/favorites container.
 
-      controls: '#fish',
-      search: '#search',
-      favorites: '#favorites',
+      totopSelector: '.totop', # Make element inside fish clickable (to send to top).
+      favoriteSelector: '.favorite', # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
 
-      totop: '.totop', # Inside the fish.
-      favorite: '.favorite', # Inside a fish or favorite.
+      fishpondResultsUpdated: @fishpondResultsUpdated, # Callback when results have been updated.
+      fishpondLoading: @fishpondLoading, # Callback when fishpond is loading.
+      fishpondReady: @fishpondReady, # Callback when fishpond is ready.
 
-      fishpondResultsUpdated: @fishpondResultsUpdated,
-      fishpondLoading: @fishpondLoading,
-      fishpondReady: @fishpondReady,
+      metadata: false, # Initially load metadata (very slow on large ponds).
 
       development: false,
       debug: false
@@ -48,7 +44,7 @@ class root.IFish
 
     # Set up container and extract data.
     #
-    @container    = $ @options.container
+    @container    = $ @options.containerSelector
     @api_key      = @container.data 'api_key'
     @pond_id      = @container.data 'pond_id'
     @api_endpoint = @container.data 'api_endpoint'
@@ -59,10 +55,10 @@ class root.IFish
 
     # Set up view elements.
     #
-    @results = $ @options.resultsList, @container
-    @controls = $ @options.controls
-    @search = $ @options.search
-    @favorites = $ @options.favorites
+    @results = $ @options.resultsSelector, @container
+    @controls = $ @options.controlsSelector
+    @search = $ @options.searchSelector
+    @favorites = $ @options.favoritesSelector
 
     # Warnings.
     #
@@ -77,8 +73,6 @@ class root.IFish
     @view = {}
 
     # Check if a Fishpond has been given.
-    #
-    # TODO Florian Hook into callbacks here.
     #
     if fishpond_or_options instanceof Fishpond
       @fishpond = fishpond_or_options
@@ -119,12 +113,12 @@ class root.IFish
     #
     # Anything with the class .totop (default) will move a fish to the top.
     #
-    @results.find(@options.fishSelector).find(@options.totop).attr 'data-bind', "click: $root.setSortValues"
+    @results.find(@options.fishSelector).find(@options.totopSelector).attr 'data-bind', "click: $root.setSortValues"
     #
     # Anything with the class .favorite (default) will put a fish into the favorites.
     #
-    @results.find(@options.fishSelector).find(@options.favorite).attr 'data-bind', "click: $root.addFavorite"
-    @favorites.find(@options.fishSelector).find(@options.favorite).attr 'data-bind', "click: $root.removeFavorite"
+    @results.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.addFavorite"
+    @favorites.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.removeFavorite"
 
   # Installs iFish controls based on the given pond.
   #
@@ -146,8 +140,6 @@ class root.IFish
     @view.name = ko.observable pond.name
 
     # Hook view model functions into the iFish lib.
-    #
-    # TODO Convoluted?
     #
     @view.setSortValues = @setSortValues
     @view.addFavorite = @addFavorite
@@ -176,8 +168,6 @@ class root.IFish
         localStorage.setItem @localStorageKey(pond, 'favorites'), ids
 
       # Add community tag.
-      #
-      # TODO Florian Include in server?
       #
       @view.tags.push
         has_binary_options: false
@@ -234,9 +224,7 @@ class root.IFish
   #
   localStorageKey: (pond, type) -> "ifish-#{pond.id}-#{type}"
 
-  # TODO Florian Rename.
-  #
-  # TODO Florian Add metadata option.
+  # Initialize the fish.
   #
   initializeFish: (pond, afterInitialize) =>
     pondSize = pond.fish.length
@@ -252,23 +240,20 @@ class root.IFish
       else
         callback fish
 
-  # TODO Florian Doc.
+  # Update all fish with new results.
+  # Sets all fish invisible, then shows only the ones in the result.
   #
   updateFish: (results) ->
     $.each @view.fish(), (i, fish) -> fish.visible 0
     $.each results, (i, result) ->
       fish = result.fish
       fish.score result.score
-      fish.visible 1 # TODO Florian
+      fish.visible 1
       fish
 
-  # TODO Florian
-  #
   sliderFor: (token) ->
     $ "form#fish .slider[data-target='query[tags][" + token + "]']"
 
-  # TODO Florian
-  #
   filterFor: (token) ->
     $ "form#fish input[name='query[filters][" + token + "]']"
 
@@ -281,8 +266,6 @@ class root.IFish
   #
   # @method setInputValues
   # @param {Fishpond::Fish} fish A fish
-  #
-  # TODO Florian Rename?
   #
   setInputValues: (fish) =>
     @setSortValues fish
@@ -327,7 +310,7 @@ class root.IFish
     @installSearchField(pond)
     @showInterface()
 
-    # TODO Florian Make configurable.
+    # TODO Make configurable.
     #
     @results.isotope
       itemSelector: @options.fishSelector,
@@ -350,7 +333,7 @@ class root.IFish
       change: @sliderChanged
     }
 
-  # TODO Florian Docs.
+  # Show the standard fish interface.
   #
   showInterface: () ->
     $(".progress").removeClass "active"
@@ -358,7 +341,7 @@ class root.IFish
     $(".form-and-results", @container).fadeOut 1
     $(".form-and-results", @container).delay(500).fadeIn 200, => @sendQuery()
 
-  # TODO Florian Docs.
+  # Install the search field functionality.
   #
   installSearchField: (pond) ->
     mappedFish = @mappedFish;

@@ -27,17 +27,18 @@
       this.installControls = __bind(this.installControls, this);
       this.installBindings = __bind(this.installBindings, this);
       this.options = {
-        container: 'section#query',
-        resultsList: '#results ul',
+        containerSelector: 'section#query',
+        resultsSelector: '#results ul',
+        controlsSelector: '#fish',
+        searchSelector: '#search',
+        favoritesSelector: '#favorites',
         fishSelector: 'li',
-        controls: '#fish',
-        search: '#search',
-        favorites: '#favorites',
-        totop: '.totop',
-        favorite: '.favorite',
+        totopSelector: '.totop',
+        favoriteSelector: '.favorite',
         fishpondResultsUpdated: this.fishpondResultsUpdated,
         fishpondLoading: this.fishpondLoading,
         fishpondReady: this.fishpondReady,
+        metadata: false,
         development: false,
         debug: false
       };
@@ -47,17 +48,17 @@
           debug: false
         });
       }
-      this.container = $(this.options.container);
+      this.container = $(this.options.containerSelector);
       this.api_key = this.container.data('api_key');
       this.pond_id = this.container.data('pond_id');
       this.api_endpoint = this.container.data('api_endpoint');
       $.extend(this.options, {
         api_endpoint: this.api_endpoint
       });
-      this.results = $(this.options.resultsList, this.container);
-      this.controls = $(this.options.controls);
-      this.search = $(this.options.search);
-      this.favorites = $(this.options.favorites);
+      this.results = $(this.options.resultsSelector, this.container);
+      this.controls = $(this.options.controlsSelector);
+      this.search = $(this.options.searchSelector);
+      this.favorites = $(this.options.favoritesSelector);
       if (this.results.length === 0) {
         console.log("[Warning] Could not find a results container under " + this.results.selector + ".");
       }
@@ -102,9 +103,9 @@
       this.filters.find('.control-label').attr('data-bind', "foreach: filters");
       this.filters.find('input[type="checkbox"]').attr('data-bind', "attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }");
       this.filters.find('label div:first').attr('data-bind', "text: name");
-      this.results.find(this.options.fishSelector).find(this.options.totop).attr('data-bind', "click: $root.setSortValues");
-      this.results.find(this.options.fishSelector).find(this.options.favorite).attr('data-bind', "click: $root.addFavorite");
-      return this.favorites.find(this.options.fishSelector).find(this.options.favorite).attr('data-bind', "click: $root.removeFavorite");
+      this.results.find(this.options.fishSelector).find(this.options.totopSelector).attr('data-bind', "click: $root.setSortValues");
+      this.results.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.addFavorite");
+      return this.favorites.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.removeFavorite");
     };
 
     IFish.prototype.installControls = function(pond, finished) {
