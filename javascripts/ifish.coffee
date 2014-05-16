@@ -272,7 +272,7 @@ class root.IFish
   filterFor: (token) ->
     $ "form#fish input[name='query[filters][" + token + "]']"
 
-  # TODO Florian
+  # Let isotope know to update the view.
   #
   updateView: ->
     @results.isotope('updateSortData', @results.find('li')).isotope()
