@@ -9,7 +9,8 @@ It will set up a user interface automatically from your pond configuration.
 
 1. `git clone` this repository.
 2. Into `index.html` Insert your data API key you have received on `ifish.io` and a pond id.
-3. Start modifying the `index.html`.
+3. Try whether it works by opening `index.html`.
+4. Start modifying the `index.html`.
 
 ## Concepts
 
