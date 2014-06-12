@@ -14,6 +14,7 @@
       this.checkboxChanged = __bind(this.checkboxChanged, this);
       this.sliderChanged = __bind(this.sliderChanged, this);
       this.installSliders = __bind(this.installSliders, this);
+      this.installDialog = __bind(this.installDialog, this);
       this.fishpondReady = __bind(this.fishpondReady, this);
       this.fishpondLoading = __bind(this.fishpondLoading, this);
       this.fishpondResultsUpdated = __bind(this.fishpondResultsUpdated, this);
@@ -124,6 +125,9 @@
       this.view.removeFavorite = this.removeFavorite;
       return this.initializeFish(pond, (function(_this) {
         return function(fish) {
+          fish.map(function(f) {
+            return f.metadata = ko.observable(f.metadata);
+          });
           _this.view.fish = ko.observableArray(fish);
           _this.view.tags = ko.observableArray(pond.tags.map(function(tag) {
             return $.extend(tag, {
@@ -286,6 +290,7 @@
       this.controls.find('input:checkbox').change(this.checkboxChanged);
       this.installSearchField(pond);
       this.showInterface();
+      this.installDialog();
       return this.results.isotope({
         itemSelector: this.options.fishSelector,
         filter: this.options.fishSelector + '[data-visible="1"]',
@@ -300,6 +305,33 @@
             return parseInt(item.attr('data-score'), 10);
           }
         }
+      });
+    };
+
+    IFish.prototype.installDialog = function() {
+      $.each(this.results.find('li'), (function(_this) {
+        return function(i, li) {
+          var dialog;
+          li = $(li);
+          dialog = li.find('.dialog');
+          return li.click(function(event) {
+            var element, fish, oldMetadata;
+            element = event.currentTarget;
+            fish = ko.dataFor(element);
+            oldMetadata = fish.metadata;
+            console.log(oldMetadata());
+            return fish.get_metadata(function(fish) {
+              oldMetadata(fish.metadata);
+              console.log(oldMetadata());
+              fish.metadata = oldMetadata;
+              oldMetadata.valueHasMutated();
+              return dialog.dialog('open');
+            });
+          });
+        };
+      })(this));
+      return this.results.find('li .dialog').dialog({
+        autoOpen: false
       });
     };
 

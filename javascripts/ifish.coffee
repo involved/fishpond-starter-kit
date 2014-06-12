@@ -150,6 +150,12 @@ class root.IFish
     # Note: Callback is triggered after fish are loaded and initialized.
     #
     @initializeFish pond, (fish) =>
+      # TODO
+      #
+      fish.map (f) -> f.metadata = ko.observable f.metadata
+
+      #
+      #
       @view.fish = ko.observableArray fish
 
       # Controls
@@ -309,6 +315,7 @@ class root.IFish
     @controls.find('input:checkbox').change @checkboxChanged
     @installSearchField(pond)
     @showInterface()
+    @installDialog()
 
     # TODO Make configurable.
     #
@@ -322,6 +329,26 @@ class root.IFish
         rowHeight: 120
       getSortData:
         score: (item) -> parseInt item.attr('data-score'), 10
+
+  installDialog: () =>
+    $.each @results.find('li'), (i, li) =>
+      li = $(li)
+      dialog = li.find '.dialog'
+      li.click (event) =>
+        element = event.currentTarget
+        fish = ko.dataFor element
+        oldMetadata = fish.metadata
+        console.log oldMetadata()
+        fish.get_metadata (fish) =>
+          # metadata = fish.metadata
+          # $.each fish.metadata, (key, metadatum) =>
+          #   metadata[key] = ko.observable metadatum
+          oldMetadata fish.metadata
+          console.log oldMetadata()
+          fish.metadata = oldMetadata
+          oldMetadata.valueHasMutated()
+          dialog.dialog 'open'
+    @results.find('li .dialog').dialog autoOpen: false #, modal: true
 
   installSliders: () =>
     @controls.find('.slider').slider {
