@@ -320,14 +320,12 @@
             fish = ko.dataFor(element);
             return fish.get_metadata(function(fish) {
               fish.visible.notifySubscribers();
-              return dialog.dialog('open');
+              return dialog.modal();
             });
           });
         };
       })(this));
-      return this.results.find('li .dialog').dialog({
-        autoOpen: false
-      });
+      return this.results.find('li .dialog').appendTo("body").modal;
     };
 
     IFish.prototype.installSliders = function() {

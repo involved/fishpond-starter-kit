@@ -342,8 +342,10 @@ class root.IFish
           # computable reevaluation.
           #
           fish.visible.notifySubscribers()
-          dialog.dialog 'open'
-    @results.find('li .dialog').dialog autoOpen: false #, modal: true
+          dialog.modal()
+    # Append to body to move out of the original structure.
+    #
+    @results.find('li .dialog').appendTo("body").modal
 
   installSliders: () =>
     @controls.find('.slider').slider {

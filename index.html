@@ -112,9 +112,24 @@
                           <!-- Use class "favorite" in a fish to make element favoritable when clicked. -->
                           <small><a class="favorite">Favorite</a></small>
                         </div>
-                        <div class="dialog" data-bind="attr: { title: title }">
-                          <p data-bind="text: 'Fish has a score of: ' + score()"></p>
-                          <p data-bind="text: getMetadata().description"></p>
+                        <!-- Inside here is the fish's modal template to change as you wish. Based on bootstrap modal. -->
+                        <div class="dialog modal fade hide" data-backdrop="true" data-keyboard="true" data-show="true">
+                          <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" data-bind="text: title"></h4>
+                              </div>
+                              <div class="modal-body">
+                                <img style="float: left; margin: 0 1em 1em 0;" data-bind="attr: { src: getMetadata().thumbnail_url }"></img>
+                                <p data-bind="text: getMetadata().description"></p>
+                                <p data-bind="text: 'Fish has a score of: ' + score()"></p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </li>
                     </ul>
@@ -201,6 +216,7 @@
     <script src="./javascripts/vendor/jquery.js?body=1" type="text/javascript"></script>
     <script src="./javascripts/vendor/jquery-ui.js?body=1" type="text/javascript"></script>
     <script src="./javascripts/vendor/jquery_ujs.js?body=1" type="text/javascript"></script>
+    <script src="./javascripts/vendor/modal.js?body=1" type="text/javascript"></script>
 
     <!-- Code for text field search engine. -->
     <script src="./javascripts/vendor/typeahead.js?body=1" type="text/javascript"></script>
