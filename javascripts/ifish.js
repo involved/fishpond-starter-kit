@@ -125,9 +125,6 @@
       this.view.removeFavorite = this.removeFavorite;
       return this.initializeFish(pond, (function(_this) {
         return function(fish) {
-          fish.map(function(f) {
-            return f.metadata = ko.observable(f.metadata);
-          });
           _this.view.fish = ko.observableArray(fish);
           _this.view.tags = ko.observableArray(pond.tags.map(function(tag) {
             return $.extend(tag, {
@@ -206,6 +203,9 @@
           callback = function(fish) {
             fish.score = ko.observable(100);
             fish.visible = ko.observable(1);
+            fish.getMetadata = ko.computed(function() {
+              return fish.visible() && fish.metadata;
+            });
             fishWithMetadata.push(fish);
             if (fishWithMetadata.length === pondSize) {
               return afterInitialize(fishWithMetadata);
@@ -315,16 +315,11 @@
           li = $(li);
           dialog = li.find('.dialog');
           return li.click(function(event) {
-            var element, fish, oldMetadata;
+            var element, fish;
             element = event.currentTarget;
             fish = ko.dataFor(element);
-            oldMetadata = fish.metadata;
-            console.log(oldMetadata());
             return fish.get_metadata(function(fish) {
-              oldMetadata(fish.metadata);
-              console.log(oldMetadata());
-              fish.metadata = oldMetadata;
-              oldMetadata.valueHasMutated();
+              fish.visible.notifySubscribers();
               return dialog.dialog('open');
             });
           });

@@ -150,10 +150,6 @@ class root.IFish
     # Note: Callback is triggered after fish are loaded and initialized.
     #
     @initializeFish pond, (fish) =>
-      # TODO
-      #
-      fish.map (f) -> f.metadata = ko.observable f.metadata
-
       #
       #
       @view.fish = ko.observableArray fish
@@ -239,6 +235,10 @@ class root.IFish
       callback = (fish) => # Empty.
         fish.score = ko.observable 100
         fish.visible = ko.observable 1
+        fish.getMetadata = ko.computed ->
+          # Use dummy observable to trigger computable recalculation.
+          #
+          fish.visible() && fish.metadata
         fishWithMetadata.push fish
         afterInitialize fishWithMetadata if fishWithMetadata.length == pondSize
       if @options.metadata
@@ -337,16 +337,11 @@ class root.IFish
       li.click (event) =>
         element = event.currentTarget
         fish = ko.dataFor element
-        oldMetadata = fish.metadata
-        console.log oldMetadata()
         fish.get_metadata (fish) =>
-          # metadata = fish.metadata
-          # $.each fish.metadata, (key, metadatum) =>
-          #   metadata[key] = ko.observable metadatum
-          oldMetadata fish.metadata
-          console.log oldMetadata()
-          fish.metadata = oldMetadata
-          oldMetadata.valueHasMutated()
+          # Trigger dummy observable to trigger getMetadata
+          # computable reevaluation.
+          #
+          fish.visible.notifySubscribers()
           dialog.dialog 'open'
     @results.find('li .dialog').dialog autoOpen: false #, modal: true
 
