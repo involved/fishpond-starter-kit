@@ -7,10 +7,24 @@ It will set up a user interface automatically from your pond configuration.
 
 ## Starting out
 
+### HTML
+
 1. `git clone` this repository.
 2. Into `index.html` Insert your data API key you have received on `ifish.io` and a pond id.
 3. Try whether it works by opening `index.html`.
 4. Start modifying the `index.html`.
+
+### CSS
+
+#### Editing CSS directly
+
+1. Modify `stylesheets/application.css`
+
+#### Using SASS (http://sass-lang.com/)
+
+1. Run `gem install sass`.
+2. Modify `stylesheets/application.sass`.
+3. Run `sass stylesheets/application.sass > stylesheets/application.css`.
 
 ## Concepts
 
