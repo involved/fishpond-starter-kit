@@ -19,12 +19,14 @@ It will set up a user interface automatically from your pond configuration.
 #### Editing CSS directly
 
 1. Modify `stylesheets/application.css`
+2. Reload the page.
 
 #### Using SASS (http://sass-lang.com/)
 
 1. Run `gem install sass`.
 2. Modify `stylesheets/application.sass`.
 3. Run `sass stylesheets/application.sass > stylesheets/application.css`.
+4. Reload the page.
 
 ## Concepts
 
