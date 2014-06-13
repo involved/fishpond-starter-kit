@@ -113,12 +113,12 @@ class root.IFish
     #
     # Anything with the class .totop (default) will move a fish to the top.
     #
-    @results.find(@options.fishSelector).find(@options.totopSelector).attr 'data-bind', "click: $root.setSortValues"
+    @results.find(@options.fishSelector).find(@options.totopSelector).attr 'data-bind', "click: $root.setSortValues, clickBubble: false"
     #
     # Anything with the class .favorite (default) will put a fish into the favorites.
     #
-    @results.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.addFavorite"
-    @favorites.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.removeFavorite"
+    @results.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.addFavorite, clickBubble: false"
+    @favorites.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.removeFavorite, clickBubble: false"
 
   # Installs iFish controls based on the given pond.
   #
@@ -235,7 +235,7 @@ class root.IFish
       callback = (fish) => # Empty.
         fish.score = ko.observable 100
         fish.visible = ko.observable 1
-        fish.getMetadata = ko.computed ->
+        fish.fromMetadata = ko.computed ->
           # Use dummy observable to trigger computable recalculation.
           #
           fish.visible() && fish.metadata
@@ -338,7 +338,7 @@ class root.IFish
         element = event.currentTarget
         fish = ko.dataFor element
         fish.get_metadata (fish) =>
-          # Trigger dummy observable to trigger getMetadata
+          # Trigger dummy observable to trigger fromMetadata
           # computable reevaluation.
           #
           fish.visible.notifySubscribers()

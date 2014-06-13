@@ -104,9 +104,9 @@
       this.filters.find('.control-label').attr('data-bind', "foreach: filters");
       this.filters.find('input[type="checkbox"]').attr('data-bind', "attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }");
       this.filters.find('label div:first').attr('data-bind', "text: name");
-      this.results.find(this.options.fishSelector).find(this.options.totopSelector).attr('data-bind', "click: $root.setSortValues");
-      this.results.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.addFavorite");
-      return this.favorites.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.removeFavorite");
+      this.results.find(this.options.fishSelector).find(this.options.totopSelector).attr('data-bind', "click: $root.setSortValues, clickBubble: false");
+      this.results.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.addFavorite, clickBubble: false");
+      return this.favorites.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.removeFavorite, clickBubble: false");
     };
 
     IFish.prototype.installControls = function(pond, finished) {
@@ -203,7 +203,7 @@
           callback = function(fish) {
             fish.score = ko.observable(100);
             fish.visible = ko.observable(1);
-            fish.getMetadata = ko.computed(function() {
+            fish.fromMetadata = ko.computed(function() {
               return fish.visible() && fish.metadata;
             });
             fishWithMetadata.push(fish);
