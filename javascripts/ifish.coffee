@@ -323,10 +323,7 @@ class root.IFish
       itemSelector: @options.fishSelector,
       filter: @options.fishSelector + '[data-visible="1"]'
       sortBy: 'score'
-      layoutMode: 'cellsByRow'
-      cellsByRow:
-        columnWidth: 160
-        rowHeight: 120
+      layoutMode: 'masonry'
       getSortData:
         score: (item) -> parseInt item.attr('data-score'), 10
 

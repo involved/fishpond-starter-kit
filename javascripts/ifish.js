@@ -295,11 +295,7 @@
         itemSelector: this.options.fishSelector,
         filter: this.options.fishSelector + '[data-visible="1"]',
         sortBy: 'score',
-        layoutMode: 'cellsByRow',
-        cellsByRow: {
-          columnWidth: 160,
-          rowHeight: 120
-        },
+        layoutMode: 'masonry',
         getSortData: {
           score: function(item) {
             return parseInt(item.attr('data-score'), 10);
