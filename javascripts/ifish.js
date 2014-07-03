@@ -272,7 +272,7 @@
     };
 
     IFish.prototype.updateView = function() {
-      return this.results.isotope('updateSortData', this.results.find('li')).isotope();
+      return this.results.isotope('updateSortData', this.results.find(this.options.fishSelector)).isotope();
     };
 
     IFish.prototype.setInputValues = function(fish) {
@@ -335,7 +335,7 @@
     };
 
     IFish.prototype.installDialog = function() {
-      $.each(this.results.find('li'), (function(_this) {
+      $.each(this.results.find(this.options.fishSelector), (function(_this) {
         return function(i, li) {
           var dialog;
           li = $(li);

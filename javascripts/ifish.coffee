@@ -302,7 +302,7 @@ class root.IFish
   # Let isotope know to update the view.
   #
   updateView: ->
-    @results.isotope('updateSortData', @results.find('li')).isotope()
+    @results.isotope('updateSortData', @results.find(@options.fishSelector)).isotope()
 
   # Sets the tag and filter value such that the given fish has a score of 0 (best).
   #
@@ -364,7 +364,7 @@ class root.IFish
         score: (item) -> parseInt $(item).attr('data-score'), 10
 
   installDialog: () =>
-    $.each @results.find('li'), (i, li) =>
+    $.each @results.find(@options.fishSelector), (i, li) =>
       li = $(li)
       dialog = li.find '.dialog'
       li.click (event) =>
