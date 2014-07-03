@@ -124,7 +124,8 @@
       this.tags.find('input[type="checkbox"]').attr('data-bind', "attr: { id: 'query_switch_' + id, name: 'query[switch][' + id + ']' }");
       this.tags.find('input[type="hidden"]').attr('data-bind', "attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }");
       this.tags.find('.slider').attr('data-bind', "attr: { 'data-target': 'query[tags][' + id + ']' }");
-      this.filters.find('.control-label').attr('data-bind', "foreach: filters");
+      this.filters.attr('data-bind', "foreach: filterGroups");
+      this.filters.find('.control-group').attr('data-bind', "foreach: filters, attr: { id: 'control_group_' + id }");
       this.filters.find('input[type="checkbox"]').attr('data-bind', "attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }");
       this.filters.find('label div:first').attr('data-bind', "text: name");
       this.results.find(this.options.fishSelector).find(this.options.totopSelector).attr('data-bind', "click: $root.setSortValues, clickBubble: false");
@@ -148,17 +149,30 @@
       this.view.removeFavorite = this.removeFavorite;
       return this.initializeFish(pond, (function(_this) {
         return function(fish) {
+          var grouped, groupedArrays;
           _this.view.fish = ko.observableArray(fish);
           _this.view.tags = ko.observableArray(pond.tags.map(function(tag) {
             return $.extend(tag, {
               value: 10
             });
           }));
-          _this.view.filters = ko.observableArray(pond.filters.map(function(tag) {
-            return $.extend(tag, {
+          grouped = {};
+          pond.filters.map(function(tag) {
+            var _name;
+            $.extend(tag, {
               value: 1
             });
-          }));
+            grouped[_name = tag.group] || (grouped[_name] = []);
+            return grouped[tag.group].push(tag);
+          });
+          groupedArrays = [];
+          $.each(grouped, function(i, group) {
+            return groupedArrays[i] = {
+              id: i,
+              filters: ko.observableArray(group)
+            };
+          });
+          _this.view.filterGroups = ko.observableArray(groupedArrays);
           _this.view.favorites = ko.observableArray(_this.loadFavorites(pond, fish));
           _this.view.favorites.subscribe(function(fish) {
             var ids;

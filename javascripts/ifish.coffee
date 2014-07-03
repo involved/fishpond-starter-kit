@@ -131,7 +131,8 @@ class root.IFish
     @tags.find('input[type="hidden"]').attr 'data-bind', "attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }"
     @tags.find('.slider').attr 'data-bind', "attr: { 'data-target': 'query[tags][' + id + ']' }"
     #
-    @filters.find('.control-label').attr 'data-bind', "foreach: filters"
+    @filters.attr 'data-bind', "foreach: filterGroups"
+    @filters.find('.control-group').attr 'data-bind', "foreach: filters, attr: { id: 'control_group_' + id }" 
     @filters.find('input[type="checkbox"]').attr 'data-bind', "attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }"
     @filters.find('label div:first').attr 'data-bind', "text: name"
 
@@ -183,8 +184,19 @@ class root.IFish
       # Controls
       #
       @view.tags = ko.observableArray pond.tags.map (tag) -> $.extend tag, value: 10
-      @view.filters = ko.observableArray pond.filters.map (tag) -> $.extend tag, value: 1
-
+      #
+      # Preprocess groups.
+      #
+      grouped = {}
+      pond.filters.map (tag) ->
+        $.extend tag, value: 1
+        grouped[tag.group] ||= []
+        grouped[tag.group].push tag
+      groupedArrays = []
+      $.each grouped, (i, group) ->
+        groupedArrays[i] = { id: i, filters: ko.observableArray group }
+      @view.filterGroups = ko.observableArray groupedArrays
+      
       # favorites
       #
       @view.favorites = ko.observableArray @loadFavorites(pond, fish)
