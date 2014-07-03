@@ -36,6 +36,15 @@
         fishSelector: 'li',
         totopSelector: '.totop',
         favoriteSelector: '.favorite',
+        isotope: {
+          sortBy: 'score',
+          layoutMode: 'masonry',
+          getSortData: {
+            score: function(item) {
+              return parseInt($(item).attr('data-score'), 10);
+            }
+          }
+        },
         fishpondResultsUpdated: this.fishpondResultsUpdated,
         fishpondLoading: this.fishpondLoading,
         fishpondReady: this.fishpondReady,
@@ -73,7 +82,7 @@
       if (fishpond_or_options instanceof Fishpond) {
         this.fishpond = fishpond_or_options;
       } else {
-        $.extend(this.options, fishpond_or_options);
+        $.extend(true, this.options, fishpond_or_options);
       }
       this.container = $(this.options.containerSelector);
       this.api_key = this.container.data('api_key');
@@ -330,22 +339,18 @@
     };
 
     IFish.prototype.fishpondReady = function(pond) {
+      var isotopeOptions;
       this.installSliders();
       this.controls.find('input:checkbox').change(this.checkboxChanged);
       this.installSearchField(pond);
       this.showInterface();
       this.installDialog();
-      return this.results.isotope({
+      isotopeOptions = $.extend({
         itemSelector: this.options.fishSelector,
-        filter: this.options.fishSelector + '[data-visible="1"]',
-        sortBy: 'score',
-        layoutMode: 'masonry',
-        getSortData: {
-          score: function(item) {
-            return parseInt($(item).attr('data-score'), 10);
-          }
-        }
-      });
+        filter: this.options.fishSelector + '[data-visible="1"]'
+      }, this.options.isotope);
+      console.log(isotopeOptions);
+      return this.results.isotope(isotopeOptions);
     };
 
     IFish.prototype.installDialog = function() {

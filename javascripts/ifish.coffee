@@ -27,6 +27,15 @@ class root.IFish
       totopSelector: '.totop', # Make element inside fish clickable (to send to top).
       favoriteSelector: '.favorite', # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
 
+      # Isotope.
+      #
+      isotope: {
+        sortBy: 'score',
+        layoutMode: 'masonry'
+        getSortData:
+          score: (item) -> parseInt $(item).attr('data-score'), 10
+      }
+
       # Callbacks.
       #
       # Fishpond.
@@ -69,9 +78,9 @@ class root.IFish
     if fishpond_or_options instanceof Fishpond
       @fishpond = fishpond_or_options
     else
-      # Override default options with the given options.
+      # Override default options with the given options (deeply).
       #
-      $.extend @options, fishpond_or_options
+      $.extend true, @options, fishpond_or_options
 
     # Set up container and extract data.
     #
@@ -365,15 +374,12 @@ class root.IFish
     @showInterface()
     @installDialog()
 
-    # TODO Make configurable.
-    #
-    @results.isotope
+    isotopeOptions = $.extend {
       itemSelector: @options.fishSelector,
       filter: @options.fishSelector + '[data-visible="1"]'
-      sortBy: 'score'
-      layoutMode: 'masonry'
-      getSortData:
-        score: (item) -> parseInt $(item).attr('data-score'), 10
+    }, @options.isotope
+    console.log isotopeOptions
+    @results.isotope isotopeOptions
 
   installDialog: () =>
     $.each @results.find(@options.fishSelector), (i, li) =>
