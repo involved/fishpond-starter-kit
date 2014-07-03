@@ -39,6 +39,27 @@
         fishpondResultsUpdated: this.fishpondResultsUpdated,
         fishpondLoading: this.fishpondLoading,
         fishpondReady: this.fishpondReady,
+        beforeAddFavorite: function(fish) {
+          return fish;
+        },
+        afterAddFavorite: function(fish) {
+          return fish;
+        },
+        beforeRemoveFavorite: function(favorite) {
+          return favorite;
+        },
+        afterRemoveFavorite: function(favorite) {
+          return favorite;
+        },
+        beforeLoadFavorite: function(fish) {
+          return fish;
+        },
+        beforeLoadFavorites: function(ids) {
+          return ids;
+        },
+        afterLoadFavorites: function(favorites) {
+          return favorites;
+        },
         metadata: false,
         development: false,
         debug: false
@@ -48,6 +69,11 @@
           development: true,
           debug: false
         });
+      }
+      if (fishpond_or_options instanceof Fishpond) {
+        this.fishpond = fishpond_or_options;
+      } else {
+        $.extend(this.options, fishpond_or_options);
       }
       this.container = $(this.options.containerSelector);
       this.api_key = this.container.data('api_key');
@@ -73,10 +99,7 @@
         console.log("[Warning] Could not find a favorites container under " + this.favorites.selector + ".");
       }
       this.view = {};
-      if (fishpond_or_options instanceof Fishpond) {
-        this.fishpond = fishpond_or_options;
-      } else {
-        $.extend(this.options, fishpond_or_options);
+      if (!(fishpond_or_options instanceof Fishpond)) {
         this.fishpond = new Fishpond(this.api_key, this.options);
         this.fishpond.loading(this.options.fishpondLoading);
         this.fishpond.ready((function(_this) {
@@ -158,18 +181,21 @@
     };
 
     IFish.prototype.loadFavorites = function(pond, fish) {
-      var ids, idsString;
+      var favorites, ids, idsString;
       idsString = localStorage.getItem(this.localStorageKey(pond, 'favorites'));
       if (idsString) {
         ids = idsString.split(',');
       } else {
         ids = [];
       }
-      return $.map(ids, (function(_this) {
+      ids = this.options.beforeLoadFavorites(ids);
+      favorites = $.map(ids, (function(_this) {
         return function(id) {
-          return _this.mappedFish[id];
+          return _this.options.beforeLoadFavorite(_this.mappedFish[id]);
         };
       })(this));
+      favorites = this.options.afterLoadFavorites(favorites);
+      return favorites;
     };
 
     IFish.prototype.addFavorite = function(fish) {
@@ -181,12 +207,16 @@
         }
       });
       if (!found) {
-        return this.view.favorites.push(fish);
+        fish = this.options.beforeAddFavorite(fish);
+        this.view.favorites.push(fish);
+        return this.options.afterAddFavorite(fish);
       }
     };
 
     IFish.prototype.removeFavorite = function(fish) {
-      return this.view.favorites.remove(fish);
+      fish = this.options.beforeRemoveFavorite(fish);
+      this.view.favorites.remove(fish);
+      return this.options.afterRemoveFavorite(fish);
     };
 
     IFish.prototype.localStorageKey = function(pond, type) {
@@ -298,7 +328,7 @@
         layoutMode: 'masonry',
         getSortData: {
           score: function(item) {
-            return parseInt(item.attr('data-score'), 10);
+            return parseInt($(item).attr('data-score'), 10);
           }
         }
       });
@@ -339,11 +369,12 @@
       $(".progress").removeClass("active");
       $(".loading").delay(500).fadeOut(200);
       $(".form-and-results", this.container).fadeOut(1);
-      return $(".form-and-results", this.container).delay(500).fadeIn(200, (function(_this) {
+      $(".form-and-results", this.container).delay(500).fadeIn(200, (function(_this) {
         return function() {
           return _this.sendQuery();
         };
       })(this));
+      return this.favorites.delay(500).fadeIn(200);
     };
 
     IFish.prototype.installSearchField = function(pond) {

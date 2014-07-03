@@ -27,12 +27,32 @@ class root.IFish
       totopSelector: '.totop', # Make element inside fish clickable (to send to top).
       favoriteSelector: '.favorite', # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
 
+      # Callbacks.
+      #
+      # Fishpond.
+      #
       fishpondResultsUpdated: @fishpondResultsUpdated, # Callback when results have been updated.
       fishpondLoading: @fishpondLoading, # Callback when fishpond is loading.
       fishpondReady: @fishpondReady, # Callback when fishpond is ready.
 
-      metadata: false, # Initially load metadata (very slow on large ponds).
+      # Client-only callbacks (defaults do nothing).
+      #
+      # Favorites.
+      #
+      beforeAddFavorite: (fish) -> fish,
+      afterAddFavorite: (fish) -> fish,
+      beforeRemoveFavorite: (favorite) -> favorite,
+      afterRemoveFavorite: (favorite) -> favorite,
+      beforeLoadFavorite: (fish) -> fish,
+      beforeLoadFavorites: (ids) -> ids,
+      afterLoadFavorites: (favorites) -> favorites,
 
+      # Metadata.
+      #
+      metadata: false, # Initially load metadata (very slow on large ponds).
+      
+      # Dev.
+      #
       development: false,
       debug: false
     }
@@ -41,6 +61,17 @@ class root.IFish
     #
     if /localhost|ngrok/.test document.domain
       $.extend @options, { development: true, debug: false }
+
+    # Check if a Fishpond has been given.
+    #
+    # Extend options if not.
+    #
+    if fishpond_or_options instanceof Fishpond
+      @fishpond = fishpond_or_options
+    else
+      # Override default options with the given options.
+      #
+      $.extend @options, fishpond_or_options
 
     # Set up container and extract data.
     #
@@ -72,14 +103,9 @@ class root.IFish
     #
     @view = {}
 
-    # Check if a Fishpond has been given.
+    # Finally, set up fishpond, if options have been given.
     #
-    if fishpond_or_options instanceof Fishpond
-      @fishpond = fishpond_or_options
-    else
-      # Override default options with the given options.
-      #
-      $.extend @options, fishpond_or_options
+    unless fishpond_or_options instanceof Fishpond
       @fishpond = new Fishpond @api_key, @options
       @fishpond.loading @options.fishpondLoading
       @fishpond.ready (pond) =>
@@ -198,7 +224,11 @@ class root.IFish
       ids = idsString.split ','
     else
       ids = []
-    $.map ids, (id) => @mappedFish[id]
+    ids = @options.beforeLoadFavorites ids
+    favorites = $.map ids, (id) =>
+      @options.beforeLoadFavorite @mappedFish[id]
+    favorites = @options.afterLoadFavorites favorites
+    favorites
 
   # Adds a fish to the favorites.
   #
@@ -209,14 +239,20 @@ class root.IFish
     found = false
     $.each @view.favorites(), (i, favorite) ->
       found = true if favorite.id == fish.id
-    @view.favorites.push fish unless found
+    unless found
+      fish = @options.beforeAddFavorite fish
+      @view.favorites.push fish
+      @options.afterAddFavorite fish
 
   # Removes a fish from the favorites.
   #
   # @method removeFavorite
   # @param {Fishpond::Fish} fish A fish
   #
-  removeFavorite: (fish) => @view.favorites.remove fish
+  removeFavorite: (fish) =>
+    fish = @options.beforeRemoveFavorite fish
+    @view.favorites.remove fish
+    @options.afterRemoveFavorite fish
 
   # Generate a localStorage key for the given pond and type.
   #
@@ -325,7 +361,7 @@ class root.IFish
       sortBy: 'score'
       layoutMode: 'masonry'
       getSortData:
-        score: (item) -> parseInt item.attr('data-score'), 10
+        score: (item) -> parseInt $(item).attr('data-score'), 10
 
   installDialog: () =>
     $.each @results.find('li'), (i, li) =>
@@ -361,6 +397,7 @@ class root.IFish
     $(".loading").delay(500).fadeOut 200
     $(".form-and-results", @container).fadeOut 1
     $(".form-and-results", @container).delay(500).fadeIn 200, => @sendQuery()
+    @favorites.delay(500).fadeIn 200
 
   # Install the search field functionality.
   #
