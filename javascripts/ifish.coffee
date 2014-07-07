@@ -24,8 +24,8 @@ class root.IFish
       favoritesSelector: '#favorites', # Selector for the HTML element containing the favorites.
       fishSelector: 'li', # Selector for the fish inside the results/favorites container.
 
-      totopSelector: '.totop', # Make element inside fish clickable (to send to top).
-      favoriteSelector: '.favorite', # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
+      totopSelector: '.totop' # Make element inside fish clickable (to send to top).
+      favoriteSelector: '.favorite' # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
 
       # Isotope.
       #
@@ -40,29 +40,32 @@ class root.IFish
       #
       # Fishpond.
       #
-      fishpondResultsUpdated: @fishpondResultsUpdated, # Callback when results have been updated.
-      fishpondLoading: @fishpondLoading, # Callback when fishpond is loading.
-      fishpondReady: @fishpondReady, # Callback when fishpond is ready.
+      fishpondResultsUpdated: @fishpondResultsUpdated # Callback when results have been updated.
+      fishpondLoading: @fishpondLoading # Callback when fishpond is loading.
+      fishpondReady: @fishpondReady # Callback when fishpond is ready.
 
       # Client-only callbacks (defaults do nothing).
       #
       # Favorites.
       #
-      beforeAddFavorite: (fish) -> fish,
-      afterAddFavorite: (fish) -> fish,
-      beforeRemoveFavorite: (favorite) -> favorite,
-      afterRemoveFavorite: (favorite) -> favorite,
-      beforeLoadFavorite: (fish) -> fish,
-      beforeLoadFavorites: (ids) -> ids,
-      afterLoadFavorites: (favorites) -> favorites,
+      afterInitialisingFavorites: (favorites) -> favorites
+      beforeAddFavorite: (fish) -> fish
+      afterAddFavorite: (fish) -> fish
+      beforeRemoveFavorite: (favorite) -> favorite
+      afterRemoveFavorite: (favorite) -> favorite
+      beforeLoadFavorite: (fish) -> fish
+      beforeLoadFavorites: (ids) -> ids
+      afterLoadFavorites: (favorites) -> favorites
+      beforeApplyBindings: (view) -> view
+      afterApplyBindings: (view) -> view
 
       # Metadata.
       #
-      metadata: false, # Initially load metadata (very slow on large ponds).
+      metadata: false # Initially load metadata (very slow on large ponds).
       
       # Dev.
       #
-      development: false,
+      development: false
       debug: false
     }
 
@@ -118,43 +121,9 @@ class root.IFish
       @fishpond = new Fishpond @api_key, @options
       @fishpond.loading @options.fishpondLoading
       @fishpond.ready (pond) =>
-        @installBindings()
         @installControls pond, @options.fishpondReady
       @fishpond.resultsUpdated @options.fishpondResultsUpdated
       @fishpond.init @pond_id
-
-  installBindings: () =>
-    # Install necessary knockout bindings in the HTML.
-    # (Find structure, set "data-bind")
-    #
-    @results.attr 'data-bind', "foreach: fish"
-    @favorites.attr 'data-bind', 'foreach: favorites'
-    @tags = @controls.find 'fieldset.tags'
-    @filters = @controls.find 'fieldset.filters'
-    #
-    @results.find(@options.fishSelector).attr 'data-bind', "attr: { 'data-score': score, 'data-visible': visible }"
-    #
-    @tags.attr 'data-bind', "foreach: tags"
-    @tags.find('label:first').attr 'data-bind', "text: name + ' (' + value + ')' "
-    @tags.find('input[type="checkbox"]').attr 'data-bind', "attr: { id: 'query_switch_' + id, name: 'query[switch][' + id + ']' }"
-    @tags.find('input[type="hidden"]').attr 'data-bind', "attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }"
-    @tags.find('.slider').attr 'data-bind', "attr: { 'data-target': 'query[tags][' + id + ']' }"
-    #
-    @filters.attr 'data-bind', "foreach: filterGroups"
-    @filters.find('.control-group').attr 'data-bind', "foreach: filters, attr: { id: 'control_group_' + id }" 
-    @filters.find('input[type="checkbox"]').attr 'data-bind', "attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }"
-    @filters.find('label div:first').attr 'data-bind', "text: name"
-
-    # Install jQuery bindings.
-    #
-    # Anything with the class .totop (default) will move a fish to the top.
-    #
-    @results.find(@options.fishSelector).find(@options.totopSelector).attr 'data-bind', "click: $root.setSortValues, clickBubble: false"
-    #
-    # Anything with the class .favorite (default) will put a fish into the favorites.
-    #
-    @results.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.addFavorite, clickBubble: false"
-    @favorites.find(@options.fishSelector).find(@options.favoriteSelector).attr 'data-bind', "click: $root.removeFavorite, clickBubble: false"
 
   # Installs iFish controls based on the given pond.
   #
@@ -208,7 +177,9 @@ class root.IFish
       
       # favorites
       #
-      @view.favorites = ko.observableArray @loadFavorites(pond, fish)
+      @view.favorites = ko.observableArray []
+      @options.afterInitialisingFavorites @view.favorites
+      @view.favorites @loadFavorites(pond, fish)
       #
       # Each time the favorites are modified, store them in localStorage.
       #
@@ -227,7 +198,9 @@ class root.IFish
 
       # Trigger knockout.
       #
+      @options.beforeApplyBindings @view
       ko.applyBindings @view
+      @options.afterApplyBindings @view
 
       # Call finished callback.
       #
@@ -315,10 +288,10 @@ class root.IFish
       fish
 
   sliderFor: (token) ->
-    $ "form#fish .slider[data-target='query[tags][" + token + "]']"
+    @controls.find ".slider[data-target='query[tags][" + token + "]']"
 
   filterFor: (token) ->
-    $ "form#fish input[name='query[filters][" + token + "]']"
+    @controls.find "input[name='query[filters][" + token + "]']"
 
   # Let isotope know to update the view.
   #
@@ -378,7 +351,6 @@ class root.IFish
       itemSelector: @options.fishSelector,
       filter: @options.fishSelector + '[data-visible="1"]'
     }, @options.isotope
-    console.log isotopeOptions
     @results.isotope isotopeOptions
 
   installDialog: () =>
@@ -440,7 +412,7 @@ class root.IFish
       highlighter: (item) => return @mappedFish[item].title
       updater: (item) =>
         fish = @mappedFish[item]
-        $("form#fish input[name^='query[filters]']:checkbox").removeAttr('checked')
+        @controls.find("input[name^='query[filters]']:checkbox").removeAttr 'checked'
         @setSortValues fish
         @sendQuery()
         fish.title

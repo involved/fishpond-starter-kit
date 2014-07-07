@@ -92,16 +92,16 @@
                 <div class='span8' id='results'>
                   <div class='row'>
                     <!-- Add single Fish structure inside the ul. -->
-                    <ul class='thumbnails'>
+                    <ul class='thumbnails' data-bind='foreach: fish'>
                       <!-- Inside here is a fish template to change as you wish. -->
-                      <li class='span4'>
+                      <li class='span4' data-bind="attr: { 'data-score': score, 'data-visible': visible }">
                         <div class='thumbnail'>
                           <!-- Bind fish values to HTML elements. -->
                           <!-- See "Bindings" here: http://knockoutjs.com/documentation/introduction.html -->
                           <h4 data-bind='text: title'></h4>
 
                           <!-- Use class "totop" in a fish to make element move to top when clicked. -->
-                          <small><a class="totop">To Top</a></small>
+                          <small><a class="totop" data-bind='click: $root.setSortValues, clickBubble: false'>To Top</a></small>
 
                           <!-- Fish have a score. -->
                           <small data-bind='text: score'></small>
@@ -110,7 +110,7 @@
                           <!-- <small data-bind='text: metadata.rating'></small> -->
 
                           <!-- Use class "favorite" in a fish to make element favoritable when clicked. -->
-                          <small><a class="favorite">Favorite</a></small>
+                          <small><a class="favorite" data-bind='click: $root.addFavorite, clickBubble: false'>Favorite</a></small>
                         </div>
                         <!-- Inside here is the fish's modal template to change as you wish. Based on bootstrap modal. -->
                         <div class="dialog modal fade hide" data-backdrop="true" data-keyboard="true" data-show="true">
@@ -120,8 +120,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                 <h4 class="modal-title" data-bind="text: title"></h4>
                               </div>
-                              <div class="modal-body">
-                                <img style="float: left; margin: 0 1em 1em 0;" data-bind="attr: { src: fromMetadata().thumbnail_url }"></img>
+                              <div class="modal-body" data-bind="style: { backgroundImage: 'url(' + fromMetadata().thumbnail_url + ')' }">
                                 <p data-bind="text: fromMetadata().description"></p>
                                 <p data-bind="text: 'Fish has a score of: ' + score()"></p>
                               </div>
@@ -146,28 +145,28 @@
                   </form>
                   <form id='fish'>
                     <div class='well'>
-                      <fieldset class='tags'>
+                      <fieldset class='tags' data-bind='foreach: tags'>
                         <!-- In slider (tag) controls, you can set attributes like the id. -->
                         <div class='control-group' data-bind="attr: { id: 'tag-' + slug }">
-                          <label class='control-label'></label>
+                          <label class='control-label' data-bind="text: name + ' (' + value + ')'"></label>
                           <div class='controls'>
-                            <label class='checkbox'>
+                            <label class='checkbox' data-bind="attr: { id: 'query_switch_' + id, name: 'query[switch][' + id + ']' }">
                               <input checked='checked' type='checkbox' value='true'>
-                              <input data-slug='theoretical-experimental' type='hidden'>
-                              <div class='slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all'>
+                              <input data-slug='theoretical-experimental' type='hidden' data-bind="attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }">
+                              <div class='slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all' data-bind="attr: { 'data-target': 'query[tags][' + id + ']' }">
                                 <a class='ui-slider-handle ui-state-default ui-corner-all' href='#' style='left: 50%;'></a>
                               </div>
                             </label>
                           </div>
                         </div>
                       </fieldset>
-                      <fieldset class='filters'>
-                        <div class='control-group'>
+                      <fieldset class='filters' data-bind='foreach: filterGroups'>
+                        <div class='control-group' data-bind="foreach: filters, attr: { id: 'control_group_' + id }">
                           <div class='control-label'>
                             <div class='controls'>
                               <label class='checkbox'>
-                                <input type='checkbox'>
-                                <div class='name'></div>
+                                <input type='checkbox' data-bind="attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }">
+                                <div class='name' data-bind='text: name'></div>
                               </label>
                             </div>
                           </div>
@@ -181,14 +180,14 @@
                 <div class='span8'>
                   <div class='row'>
                     <!-- Add single favorite Fish structure inside the ul. -->
-                    <ul class='thumbnails' id='favorites'>
+                    <ul class='thumbnails' id='favorites' data-bind='foreach: favorites'>
                       <!-- Inside here is a fish favorite template to change as you wish (see fish above on how to do it). -->
                       <li class='span4'>
                         <div class='thumbnail'>
                           <small data-bind='text: title'></small>
                           <small data-bind='text: score'></small>
                           <!-- <small data-bind='text: metadata.rating'></small> -->
-                          <div><small><a class="favorite">Remove from Favorites</a></small></div>
+                          <div><small><a class="favorite" data-bind='click: $root.removeFavorite, clickBubble: false'>Remove from Favorites</a></small></div>
                         </div>
                       </li>
                     </ul>

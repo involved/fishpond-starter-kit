@@ -1,3 +1,8 @@
 .navbar .brand {
   width: 36px;
   height: 23px; }
+
+section#explore .thumbnails li {
+  width: 200px;
+  margin-right: 20px;
+}

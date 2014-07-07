@@ -26,7 +26,6 @@
       this.addFavorite = __bind(this.addFavorite, this);
       this.loadFavorites = __bind(this.loadFavorites, this);
       this.installControls = __bind(this.installControls, this);
-      this.installBindings = __bind(this.installBindings, this);
       this.options = {
         containerSelector: 'section#query',
         resultsSelector: '#results ul',
@@ -48,6 +47,9 @@
         fishpondResultsUpdated: this.fishpondResultsUpdated,
         fishpondLoading: this.fishpondLoading,
         fishpondReady: this.fishpondReady,
+        afterInitialisingFavorites: function(favorites) {
+          return favorites;
+        },
         beforeAddFavorite: function(fish) {
           return fish;
         },
@@ -68,6 +70,12 @@
         },
         afterLoadFavorites: function(favorites) {
           return favorites;
+        },
+        beforeApplyBindings: function(view) {
+          return view;
+        },
+        afterApplyBindings: function(view) {
+          return view;
         },
         metadata: false,
         development: false,
@@ -113,7 +121,6 @@
         this.fishpond.loading(this.options.fishpondLoading);
         this.fishpond.ready((function(_this) {
           return function(pond) {
-            _this.installBindings();
             return _this.installControls(pond, _this.options.fishpondReady);
           };
         })(this));
@@ -121,26 +128,6 @@
         this.fishpond.init(this.pond_id);
       }
     }
-
-    IFish.prototype.installBindings = function() {
-      this.results.attr('data-bind', "foreach: fish");
-      this.favorites.attr('data-bind', 'foreach: favorites');
-      this.tags = this.controls.find('fieldset.tags');
-      this.filters = this.controls.find('fieldset.filters');
-      this.results.find(this.options.fishSelector).attr('data-bind', "attr: { 'data-score': score, 'data-visible': visible }");
-      this.tags.attr('data-bind', "foreach: tags");
-      this.tags.find('label:first').attr('data-bind', "text: name + ' (' + value + ')' ");
-      this.tags.find('input[type="checkbox"]').attr('data-bind', "attr: { id: 'query_switch_' + id, name: 'query[switch][' + id + ']' }");
-      this.tags.find('input[type="hidden"]').attr('data-bind', "attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }");
-      this.tags.find('.slider').attr('data-bind', "attr: { 'data-target': 'query[tags][' + id + ']' }");
-      this.filters.attr('data-bind', "foreach: filterGroups");
-      this.filters.find('.control-group').attr('data-bind', "foreach: filters, attr: { id: 'control_group_' + id }");
-      this.filters.find('input[type="checkbox"]').attr('data-bind', "attr: { id: 'query_filters_' + id, name: 'query[filters][' + id + ']', value: value, 'data-slug': slug }");
-      this.filters.find('label div:first').attr('data-bind', "text: name");
-      this.results.find(this.options.fishSelector).find(this.options.totopSelector).attr('data-bind', "click: $root.setSortValues, clickBubble: false");
-      this.results.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.addFavorite, clickBubble: false");
-      return this.favorites.find(this.options.fishSelector).find(this.options.favoriteSelector).attr('data-bind', "click: $root.removeFavorite, clickBubble: false");
-    };
 
     IFish.prototype.installControls = function(pond, finished) {
       var fish, _i, _len, _ref;
@@ -182,7 +169,9 @@
             };
           });
           _this.view.filterGroups = ko.observableArray(groupedArrays);
-          _this.view.favorites = ko.observableArray(_this.loadFavorites(pond, fish));
+          _this.view.favorites = ko.observableArray([]);
+          _this.options.afterInitialisingFavorites(_this.view.favorites);
+          _this.view.favorites(_this.loadFavorites(pond, fish));
           _this.view.favorites.subscribe(function(fish) {
             var ids;
             ids = $.map(_this.view.favorites(), function(favorite) {
@@ -197,7 +186,9 @@
             slug: "community",
             value: 10
           });
+          _this.options.beforeApplyBindings(_this.view);
           ko.applyBindings(_this.view);
+          _this.options.afterApplyBindings(_this.view);
           return finished(pond);
         };
       })(this));
@@ -287,11 +278,11 @@
     };
 
     IFish.prototype.sliderFor = function(token) {
-      return $("form#fish .slider[data-target='query[tags][" + token + "]']");
+      return this.controls.find(".slider[data-target='query[tags][" + token + "]']");
     };
 
     IFish.prototype.filterFor = function(token) {
-      return $("form#fish input[name='query[filters][" + token + "]']");
+      return this.controls.find("input[name='query[filters][" + token + "]']");
     };
 
     IFish.prototype.updateView = function() {
@@ -349,7 +340,6 @@
         itemSelector: this.options.fishSelector,
         filter: this.options.fishSelector + '[data-visible="1"]'
       }, this.options.isotope);
-      console.log(isotopeOptions);
       return this.results.isotope(isotopeOptions);
     };
 
@@ -433,7 +423,7 @@
           return function(item) {
             var fish;
             fish = _this.mappedFish[item];
-            $("form#fish input[name^='query[filters]']:checkbox").removeAttr('checked');
+            _this.controls.find("input[name^='query[filters]']:checkbox").removeAttr('checked');
             _this.setSortValues(fish);
             _this.sendQuery();
             return fish.title;
