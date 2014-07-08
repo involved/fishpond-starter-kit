@@ -58,6 +58,7 @@ class root.IFish
       afterLoadFavorites: (favorites) -> favorites
       beforeApplyBindings: (view) -> view
       afterApplyBindings: (view) -> view
+      ready: (pond) -> pond
 
       # Metadata.
       #
@@ -122,6 +123,7 @@ class root.IFish
       @fishpond.loading @options.fishpondLoading
       @fishpond.ready (pond) =>
         @installControls pond, @options.fishpondReady
+        @options.ready pond
       @fishpond.resultsUpdated @options.fishpondResultsUpdated
       @fishpond.init @pond_id
 
@@ -365,10 +367,10 @@ class root.IFish
           # computable reevaluation.
           #
           fish.visible.notifySubscribers()
-          dialog.modal()
+          dialog.modal('toggle')
     # Append to body to move out of the original structure.
     #
-    @results.find('li .dialog').appendTo("body").modal
+    @results.find('li .dialog').appendTo("body").modal('hide')
 
   installSliders: () =>
     @controls.find('.slider').slider {

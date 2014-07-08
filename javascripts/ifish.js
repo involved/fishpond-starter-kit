@@ -77,6 +77,9 @@
         afterApplyBindings: function(view) {
           return view;
         },
+        ready: function(pond) {
+          return pond;
+        },
         metadata: false,
         development: false,
         debug: false
@@ -121,7 +124,8 @@
         this.fishpond.loading(this.options.fishpondLoading);
         this.fishpond.ready((function(_this) {
           return function(pond) {
-            return _this.installControls(pond, _this.options.fishpondReady);
+            _this.installControls(pond, _this.options.fishpondReady);
+            return _this.options.ready(pond);
           };
         })(this));
         this.fishpond.resultsUpdated(this.options.fishpondResultsUpdated);
@@ -355,12 +359,12 @@
             fish = ko.dataFor(element);
             return fish.get_metadata(function(fish) {
               fish.visible.notifySubscribers();
-              return dialog.modal();
+              return dialog.modal('toggle');
             });
           });
         };
       })(this));
-      return this.results.find('li .dialog').appendTo("body").modal;
+      return this.results.find('li .dialog').appendTo("body").modal('hide');
     };
 
     IFish.prototype.installSliders = function() {
