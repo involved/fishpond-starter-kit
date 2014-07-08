@@ -152,7 +152,7 @@
                           <div class='controls'>
                             <label class='checkbox' data-bind="attr: { id: 'query_switch_' + id, name: 'query[switch][' + id + ']' }">
                               <input checked='checked' type='checkbox' value='true'>
-                              <input data-slug='theoretical-experimental' type='hidden' data-bind="attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }">
+                              <input type='hidden' data-bind="attr: { id: 'query_tags_' + id, name: 'query[tags][' + id + ']', value: value, 'data-slug': slug }">
                               <div class='slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all' data-bind="attr: { 'data-target': 'query[tags][' + id + ']' }">
                                 <a class='ui-slider-handle ui-state-default ui-corner-all' href='#' style='left: 50%;'></a>
                               </div>
