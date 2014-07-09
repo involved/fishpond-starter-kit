@@ -391,9 +391,9 @@
     };
 
     IFish.prototype.installSearchField = function(pond) {
-      var mappedFish;
+      var mappedFish, typeaheadOptions;
       mappedFish = this.mappedFish;
-      return this.search.find('input[type="text"]').typeahead({
+      typeaheadOptions = $.extend({
         items: 5,
         source: this.fishIds,
         matcher: function(item) {
@@ -433,7 +433,8 @@
             return fish.title;
           };
         })(this)
-      });
+      }, this.options.search);
+      return this.search.find('input[type="text"]').typeahead(typeaheadOptions);
     };
 
     IFish.prototype.sliderChanged = function(e, ui) {

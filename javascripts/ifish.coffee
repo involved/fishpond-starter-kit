@@ -396,7 +396,7 @@ class root.IFish
   installSearchField: (pond) ->
     mappedFish = @mappedFish;
 
-    @search.find('input[type="text"]').typeahead
+    typeaheadOptions = $.extend
       items: 5
       source: @fishIds
       matcher: (item) -> return mappedFish[item].title.score(this.query) > 0.1
@@ -418,6 +418,9 @@ class root.IFish
         @setSortValues fish
         @sendQuery()
         fish.title
+      , @options.search
+    @search.find('input[type="text"]').typeahead typeaheadOptions
+
 
   # jQuery UI slider slide and change event handler
   #
