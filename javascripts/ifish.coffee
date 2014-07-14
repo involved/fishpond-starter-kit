@@ -17,15 +17,14 @@ class root.IFish
     #  * System options (not documented to users).
     #
     @options =
-      containerSelector: '#ifish'     # Selector for the container surrounding the iFish elements.
-      resultsSelector: 'ul.results'   # Selector for the results list.
-      fishSelector: 'li'              # Selector for the fish inside the results/favorites container.
-      controlsSelector: 'form.tags'   # Selector for the HTML element containing iFish controls.
-      searchSelector: 'form.search'   # Selector for the HTML element containing the search field.
-      favoritesSelector: '#favorites' # Selector for the HTML element containing the favorites.
-
-      totopSelector: '.totop'         # Make element inside fish clickable (to send to top).
-      favoriteSelector: '.favorite'   # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
+      containerSelector: '#ifish'       # Selector for the container surrounding the iFish elements.
+      resultsSelector: 'ul.results'     # Selector for the results list.
+      fishSelector: 'li'                # Selector for the fish inside the results/favorites container.
+      controlsSelector: 'form.controls' # Selector for the HTML element containing iFish controls.
+      searchSelector: 'form.search'     # Selector for the HTML element containing the search field.
+      favoritesSelector: '#favorites'   # Selector for the HTML element containing the favorites.
+      totopSelector: '.totop'           # Make element inside fish clickable (to send to top).
+      favoriteSelector: '.favorite'     # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
 
       # Isotope.
       #

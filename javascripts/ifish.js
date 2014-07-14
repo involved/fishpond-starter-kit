@@ -30,7 +30,7 @@
         containerSelector: '#ifish',
         resultsSelector: 'ul.results',
         fishSelector: 'li',
-        controlsSelector: 'form.tags',
+        controlsSelector: 'form.controls',
         searchSelector: 'form.search',
         favoritesSelector: '#favorites',
         totopSelector: '.totop',
