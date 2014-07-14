@@ -1,8 +1,10 @@
 /* =============================================================
- * bootstrap-typeahead.js v2.2.2
- * http://twitter.github.com/bootstrap/javascript.html#typeahead
+ * bootstrap3-typeahead.js v3.0.3
+ * https://github.com/bassjobsen/Bootstrap-3-Typeahead
  * =============================================================
- * Copyright 2012 Twitter, Inc.
+ * Original written by @mdo and @fat
+ * =============================================================
+ * Copyright 2014 Bass Jobsen @bassjobsen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +20,6 @@
  * ============================================================ */
 
 
-
 !function($){
 
   "use strict"; // jshint ;_;
@@ -32,23 +33,28 @@
     this.options = $.extend({}, $.fn.typeahead.defaults, options)
     this.matcher = this.options.matcher || this.matcher
     this.sorter = this.options.sorter || this.sorter
+    this.select = this.options.select || this.select
+    this.autoSelect = typeof this.options.autoSelect == 'boolean' ? this.options.autoSelect : true
     this.highlighter = this.options.highlighter || this.highlighter
     this.updater = this.options.updater || this.updater
     this.source = this.options.source
     this.$menu = $(this.options.menu)
     this.shown = false
-    this.listen()
+    this.listen(),
+	this.showHintOnFocus = typeof this.options.showHintOnFocus == 'boolean' ? this.options.showHintOnFocus : false
   }
 
   Typeahead.prototype = {
 
     constructor: Typeahead
-
+	
   , select: function () {
       var val = this.$menu.find('.active').attr('data-value')
-      this.$element
-        .val(this.updater(val))
-        .change()
+      if(this.autoSelect || val) {
+        this.$element
+          .val(this.updater(val))
+          .change()
+      }
       return this.hide()
     }
 
@@ -56,15 +62,23 @@
       return item
     }
 
+  , setSource: function (source) {
+      this.source = source;
+    }	
+
   , show: function () {
       var pos = $.extend({}, this.$element.position(), {
         height: this.$element[0].offsetHeight
-      })
+      }), scrollHeight
+      
+      scrollHeight = typeof this.options.scrollHeight == 'function' ?
+          this.options.scrollHeight.call() :
+          this.options.scrollHeight
 
       this.$menu
         .insertAfter(this.$element)
         .css({
-          top: pos.top + pos.height
+          top: pos.top + pos.height + scrollHeight
         , left: pos.left
         })
         .show()
@@ -79,12 +93,15 @@
       return this
     }
 
-  , lookup: function (event) {
-      var items
+  , lookup: function (query) {
+      var items      
+	  if (typeof(query) != 'undefined' && query != null) {
+		this.query = query;
+	  } else {
+		this.query = this.$element.val() ||  '';
+	  }
 
-      this.query = this.$element.val()
-
-      if (!this.query || this.query.length < this.options.minLength) {
+      if (this.query.length < this.options.minLength) {
         return this.shown ? this.hide() : this
       }
 
@@ -105,8 +122,12 @@
       if (!items.length) {
         return this.shown ? this.hide() : this
       }
-
-      return this.render(items.slice(0, this.options.items)).show()
+	  
+	  if (this.options.items == 'all' || this.options.minLength == 0 && !this.$element.val()) {
+		return this.render(items).show()
+	  } else {	
+		return this.render(items.slice(0, this.options.items)).show()
+	  }
     }
 
   , matcher: function (item) {
@@ -144,7 +165,9 @@
         return i[0]
       })
 
-      items.first().addClass('active')
+      if (this.autoSelect) {
+        items.first().addClass('active')
+      }
       this.$menu.html(items)
       return this
     }
@@ -173,6 +196,7 @@
 
   , listen: function () {
       this.$element
+        .on('focus',    $.proxy(this.focus, this))
         .on('blur',     $.proxy(this.blur, this))
         .on('keypress', $.proxy(this.keypress, this))
         .on('keyup',    $.proxy(this.keyup, this))
@@ -184,8 +208,22 @@
       this.$menu
         .on('click', $.proxy(this.click, this))
         .on('mouseenter', 'li', $.proxy(this.mouseenter, this))
-    }
+        .on('mouseleave', 'li', $.proxy(this.mouseleave, this))
+	}
+  , destroy : function () {
+		   this.$element.data('typeahead',null)
+			this.$element
+			.off('focus')
+			.off('blur')
+			.off('keypress')
+			.off('keyup')
 
+		  if (this.eventSupported('keydown')) {
+			this.$element.off('keydown')
+		  }
+
+		  this.$menu.remove();
+	}	
   , eventSupported: function(eventName) {
       var isSupported = eventName in this.$element
       if (!isSupported) {
@@ -220,8 +258,12 @@
     }
 
   , keydown: function (e) {
-      this.suppressKeyPressRepeat = ~$.inArray(e.keyCode, [40,38,9,13,27])
-      this.move(e)
+      this.suppressKeyPressRepeat = ~$.inArray(e.keyCode, [40,38,9,13,27]);
+	  if (!this.shown && e.keyCode == 40) {
+		this.lookup("");
+	  } else {
+		this.move(e)
+	  }
     }
 
   , keypress: function (e) {
@@ -230,8 +272,8 @@
     }
 
   , keyup: function (e) {
-      switch(e.keyCode) {
-        case 40: // down arrow
+      switch(e.keyCode) {  
+		case 40: // down arrow      
         case 38: // up arrow
         case 16: // shift
         case 17: // ctrl
@@ -247,8 +289,7 @@
         case 27: // escape
           if (!this.shown) return
           this.hide()
-          break
-
+          break		
         default:
           this.lookup()
       }
@@ -257,20 +298,36 @@
       e.preventDefault()
   }
 
+  , focus: function (e) {
+	  if (!this.focused) {
+		  this.focused = true
+		  if (this.options.minLength == 0 && !this.$element.val() || this.options.showHintOnFocus) {
+			this.lookup(); 
+		  }
+	  }
+    }
+
   , blur: function (e) {
-      var that = this
-      setTimeout(function () { that.hide() }, 150)
+      this.focused = false
+      if (!this.mousedover && this.shown) this.hide()
     }
 
   , click: function (e) {
       e.stopPropagation()
       e.preventDefault()
       this.select()
+      this.$element.focus()
     }
 
   , mouseenter: function (e) {
+      this.mousedover = true
       this.$menu.find('.active').removeClass('active')
       $(e.currentTarget).addClass('active')
+    }
+
+  , mouseleave: function (e) {
+      this.mousedover = false
+      if (!this.focused && this.shown) this.hide()
     }
 
   }
@@ -282,12 +339,19 @@
   var old = $.fn.typeahead
 
   $.fn.typeahead = function (option) {
+	var arg = arguments;
     return this.each(function () {
       var $this = $(this)
         , data = $this.data('typeahead')
         , options = typeof option == 'object' && option
       if (!data) $this.data('typeahead', (data = new Typeahead(this, options)))
-      if (typeof option == 'string') data[option]()
+      if (typeof option == 'string') {
+		if (arg.length > 1) {
+			data[option].apply(data, Array.prototype.slice.call(arg ,1));
+		} else {
+			data[option]()
+		}
+	  }
     })
   }
 
@@ -297,6 +361,8 @@
   , menu: '<ul class="typeahead dropdown-menu"></ul>'
   , item: '<li><a href="#"></a></li>'
   , minLength: 1
+  , scrollHeight: 0
+  , autoSelect: true
   }
 
   $.fn.typeahead.Constructor = Typeahead
@@ -317,7 +383,6 @@
   $(document).on('focus.typeahead.data-api', '[data-provide="typeahead"]', function (e) {
     var $this = $(this)
     if ($this.data('typeahead')) return
-    e.preventDefault()
     $this.typeahead($this.data())
   })
 
