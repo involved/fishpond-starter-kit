@@ -26,7 +26,7 @@ img {
 
 /* line 21, ../../app/assets/stylesheets/shared/_flat.css.scss */
 .loading {
-  background: url(/assets/loader.gif) no-repeat center center;
+  background: url(http://ifish.io/assets/loader.gif) no-repeat center center;
 }
 
 /* line 29, ../../app/assets/stylesheets/shared/_flat.css.scss */
@@ -68,15 +68,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* line 2, ../../app/assets/stylesheets/query.css.scss */
-section#query .slider {
+#ifish .slider {
   margin-top: 2px;
 }
 /* line 8, ../../app/assets/stylesheets/query.css.scss */
-section#query .thumbnails li {
+#ifish .thumbnails li {
   margin-left: 0;
 }
 /* line 11, ../../app/assets/stylesheets/query.css.scss */
-section#query .thumbnails .thumbnail {
+#ifish .thumbnails .thumbnail {
   padding-top: 10px;
   background: #FFF;
   text-align: center;
@@ -84,35 +84,35 @@ section#query .thumbnails .thumbnail {
   overflow: hidden;
 }
 /* line 18, ../../app/assets/stylesheets/query.css.scss */
-section#query .thumbnails .thumbnail p {
+#ifish .thumbnails .thumbnail p {
   line-height: 18px;
 }
 /* line 24, ../../app/assets/stylesheets/query.css.scss */
-section#query .loading {
+#ifish .loading {
   background: none;
 }
 /* line 29, ../../app/assets/stylesheets/query.css.scss */
-section#query #results {
+#ifish #results {
   /**** Isotope CSS3 transitions ****/
   /**** disabling Isotope CSS3 transitions ****/
 }
 /* line 30, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope-item {
+#ifish #results .isotope-item {
   z-index: 2;
 }
 /* line 32, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope-item.isotope-hidden {
+#ifish #results .isotope-item.isotope-hidden {
   pointer-events: none;
   z-index: 1;
 }
 /* line 38, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope-hidden.isotope-item {
+#ifish #results .isotope-hidden.isotope-item {
   pointer-events: none;
   z-index: 1;
 }
 /* line 46, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope,
-section#query #results .isotope .isotope-item {
+#ifish #results .isotope,
+#ifish #results .isotope .isotope-item {
   -webkit-transition-duration: 0.8s;
   -moz-transition-duration: 0.8s;
   -ms-transition-duration: 0.8s;
@@ -120,7 +120,7 @@ section#query #results .isotope .isotope-item {
   transition-duration: 0.8s;
 }
 /* line 54, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope {
+#ifish #results .isotope {
   -webkit-transition-property: height, width;
   -moz-transition-property: height, width;
   -ms-transition-property: height, width;
@@ -128,7 +128,7 @@ section#query #results .isotope {
   transition-property: height, width;
 }
 /* line 62, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope .isotope-item {
+#ifish #results .isotope .isotope-item {
   -webkit-transition-property: -webkit-transform, opacity;
   -moz-transition-property: -moz-transform, opacity;
   -ms-transition-property: -ms-transform, opacity;
@@ -136,9 +136,9 @@ section#query #results .isotope .isotope-item {
   transition-property: transform, opacity;
 }
 /* line 74, ../../app/assets/stylesheets/query.css.scss */
-section#query #results .isotope.no-transition,
-section#query #results .isotope.no-transition .isotope-item,
-section#query #results .isotope .isotope-item.no-transition {
+#ifish #results .isotope.no-transition,
+#ifish #results .isotope.no-transition .isotope-item,
+#ifish #results .isotope .isotope-item.no-transition {
   -webkit-transition-duration: 0s;
   -moz-transition-duration: 0s;
   -ms-transition-duration: 0s;

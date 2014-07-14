@@ -73,7 +73,7 @@
         </h1>
       </div>
       <!-- TODO You need to enter a pond ID (from http://ifish.io/ponds) and your data-api_key (from http://ifish.io/account). -->
-      <section id='query' data-api_endpoint='http://ifish.io/api' data-api_key='TODO' data-pond_id='TODO'>
+      <section id='ifish' data-api_endpoint='http://ifish.io/api' data-api_key='ZDFNTXXSDwEPITBRH10AR44AB5VeyizugeyxZxsPQ' data-pond_id='EKknFR'>
         <div class='row'>
           <div class='loading col-lg-4 col-lg-offset-3'>
             <center>
@@ -86,13 +86,13 @@
               <div class='bar' width='100%'></div>
             </div>
           </div>
-          <div class='form-and-results row'>
+          <div class='form-and-results row hidden'>
             <div class='col-lg-9 col-lg-offset-1'>
               <div class='row-fluid'>
-                <div class='col-lg-8' id='results'>
+                <div class='col-lg-8'>
                   <div class='row'>
                     <!-- Add single Fish structure inside the ul. -->
-                    <ul class='thumbnails' data-bind='foreach: fish'>
+                    <ul class='results thumbnails' data-bind='foreach: fish'>
                       <!-- Inside here is a fish template to change as you wish. -->
                       <li class='col-lg-5' data-bind="attr: { 'data-score': score, 'data-visible': visible }">
                         <div class='thumbnail'>
@@ -136,14 +136,14 @@
                 </div>
                 <div class='col-lg-4'>
                   <!-- Any input field inside id search will be made searchable. -->
-                  <form class='form-horizontal' id='search'>
+                  <form class='search form-horizontal'>
                     <div class='well'>
                       <fieldset>
                         <input class='search-query col-lg-12' placeholder='Search by author name' type='text'>
                       </fieldset>
                     </div>
                   </form>
-                  <form id='fish'>
+                  <form class='tags'>
                     <div class='well'>
                       <fieldset class='tags' data-bind='foreach: tags'>
                         <!-- In slider (tag) controls, you can set attributes like the id. -->
@@ -227,7 +227,7 @@
     <script src="./javascripts/ifish.js" type="text/javascript"></script>
 
     <!-- Code to make the fish move around. -->
-    <script src="./javascripts/vendor/isotope.js" type="text/javascript"></script>
+    <script src="./javascripts/vendor/isotope.min.js" type="text/javascript"></script>
 
     <!-- Code for the data bindings (data-bind) in the fish/favorites/controls. -->
     <script src="./javascripts/vendor/knockout.js" type="text/javascript"></script>

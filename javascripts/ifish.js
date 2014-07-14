@@ -27,12 +27,12 @@
       this.loadFavorites = __bind(this.loadFavorites, this);
       this.installControls = __bind(this.installControls, this);
       this.options = {
-        containerSelector: 'section#query',
-        resultsSelector: '#results ul',
-        controlsSelector: '#fish',
-        searchSelector: '#search',
-        favoritesSelector: '#favorites',
+        containerSelector: '#ifish',
+        resultsSelector: 'ul.results',
         fishSelector: 'li',
+        controlsSelector: 'form.tags',
+        searchSelector: 'form.search',
+        favoritesSelector: '#favorites',
         totopSelector: '.totop',
         favoriteSelector: '.favorite',
         isotope: {
@@ -381,13 +381,8 @@
     IFish.prototype.showInterface = function() {
       $(".progress").removeClass("active");
       $(".loading").delay(500).fadeOut(200);
-      $(".form-and-results", this.container).fadeOut(1);
-      $(".form-and-results", this.container).delay(500).fadeIn(200, (function(_this) {
-        return function() {
-          return _this.sendQuery();
-        };
-      })(this));
-      return this.favorites.delay(500).fadeIn(200);
+      $(".form-and-results", this.container).delay(1000).removeClass('hidden');
+      return this.favorites.delay(500).removeClass('hidden');
     };
 
     IFish.prototype.installSearchField = function(pond) {

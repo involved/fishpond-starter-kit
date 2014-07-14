@@ -16,33 +16,32 @@ class root.IFish
     #  * Callbacks
     #  * System options (not documented to users).
     #
-    @options = {
-      containerSelector: 'section#query', # Selector for the container surrounding the iFish elements.
-      resultsSelector: '#results ul', # Selector for the results list.
-      controlsSelector: '#fish', # Selector for the HTML element containing iFish controls.
-      searchSelector: '#search', # Selector for the HTML element containing the search field.
-      favoritesSelector: '#favorites', # Selector for the HTML element containing the favorites.
-      fishSelector: 'li', # Selector for the fish inside the results/favorites container.
+    @options =
+      containerSelector: '#ifish'     # Selector for the container surrounding the iFish elements.
+      resultsSelector: 'ul.results'   # Selector for the results list.
+      fishSelector: 'li'              # Selector for the fish inside the results/favorites container.
+      controlsSelector: 'form.tags'   # Selector for the HTML element containing iFish controls.
+      searchSelector: 'form.search'   # Selector for the HTML element containing the search field.
+      favoritesSelector: '#favorites' # Selector for the HTML element containing the favorites.
 
-      totopSelector: '.totop' # Make element inside fish clickable (to send to top).
-      favoriteSelector: '.favorite' # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
+      totopSelector: '.totop'         # Make element inside fish clickable (to send to top).
+      favoriteSelector: '.favorite'   # Make element inside a fish or favorite clickable (and add/remove to/from favorites).
 
       # Isotope.
       #
-      isotope: {
-        sortBy: 'score',
+      isotope:
+        sortBy: 'score'
         layoutMode: 'masonry'
         getSortData:
           score: (item) -> parseInt $(item).attr('data-score'), 10
-      }
 
       # Callbacks.
       #
       # Fishpond.
       #
       fishpondResultsUpdated: @fishpondResultsUpdated # Callback when results have been updated.
-      fishpondLoading: @fishpondLoading # Callback when fishpond is loading.
-      fishpondReady: @fishpondReady # Callback when fishpond is ready.
+      fishpondLoading: @fishpondLoading               # Callback when fishpond is loading.
+      fishpondReady: @fishpondReady                   # Callback when fishpond is ready.
 
       # Client-only callbacks (defaults do nothing).
       #
@@ -62,13 +61,12 @@ class root.IFish
 
       # Metadata.
       #
-      metadata: false # Initially load metadata (very slow on large ponds).
+      metadata: false # Initially load unloaded metadata (very slow on large ponds).
       
       # Dev.
       #
       development: false
       debug: false
-    }
 
     # Override system options using heuristics.
     #
@@ -373,24 +371,23 @@ class root.IFish
     @results.find('li .dialog').appendTo("body").modal('hide')
 
   installSliders: () =>
-    @controls.find('.slider').slider {
-      value: 10,
-      min: 0,
-      max: 20,
-      step: 0.1,
-      slide: @sliderChanged,
+    @controls.find('.slider').slider
+      value: 10
+      min: 0
+      max: 20
+      step: 0.1
+      slide: @sliderChanged
       change: @sliderChanged
-    }
 
   # Show the standard fish interface.
   #
   showInterface: () ->
     $(".progress").removeClass "active"
     $(".loading").delay(500).fadeOut 200
-    $(".form-and-results", @container).fadeOut 1
-    $(".form-and-results", @container).delay(500).fadeIn 200, => @sendQuery()
-    @favorites.delay(500).fadeIn 200
-
+    $(".form-and-results", @container).delay(1000).removeClass('hidden')
+    @favorites.delay(500).removeClass 'hidden'
+    # TODO: @sendQuery()
+    
   # Install the search field functionality.
   #
   installSearchField: (pond) ->
