@@ -71,10 +71,10 @@
         afterLoadFavorites: function(favorites) {
           return favorites;
         },
-        beforeApplyBindings: function(view) {
+        beforeApplyBindings: function(view, container) {
           return view;
         },
-        afterApplyBindings: function(view) {
+        afterApplyBindings: function(view, container) {
           return view;
         },
         ready: function(pond) {
@@ -95,28 +95,28 @@
       } else {
         $.extend(true, this.options, fishpond_or_options);
       }
-      this.container = $(this.options.containerSelector);
-      this.api_key = this.container.data('api_key');
-      this.pond_id = this.container.data('pond_id');
-      this.api_endpoint = this.container.data('api_endpoint');
+      this.container = this.options.containerSelector instanceof jQuery ? this.options.containerSelector : $(this.options.containerSelector);
+      this.api_key = this.options.apiKey || this.container.data('api_key');
+      this.pond_id = this.options.pondId || this.container.data('pond_id');
+      this.api_endpoint = this.options.apiEndpoint || this.container.data('api_endpoint');
       $.extend(this.options, {
         api_endpoint: this.api_endpoint
       });
       this.results = $(this.options.resultsSelector, this.container);
-      this.controls = $(this.options.controlsSelector);
-      this.search = $(this.options.searchSelector);
+      this.controls = $(this.options.controlsSelector, this.container);
+      this.search = $(this.options.searchSelector, this.container);
       this.favorites = $(this.options.favoritesSelector);
       if (this.results.length === 0) {
-        console.log("[Warning] Could not find a results container under " + this.results.selector + ".");
+        console.log("[iFish Warning] Could not find a results container under " + this.results.selector + ".");
       }
       if (this.controls.length === 0) {
-        console.log("[Warning] Could not find an ifish controls container under " + this.controls.selector + ".");
+        console.log("[iFish Warning] Could not find an ifish controls container under " + this.controls.selector + ".");
       }
       if (this.search.length === 0) {
-        console.log("[Warning] Could not find a search field under " + this.search.selector + ".");
+        console.log("[iFish Warning] Could not find a search field under " + this.search.selector + ".");
       }
       if (this.favorites.length === 0) {
-        console.log("[Warning] Could not find a favorites container under " + this.favorites.selector + ".");
+        console.log("[iFish Warning] Could not find a favorites container under " + this.favorites.selector + ".");
       }
       this.view = {};
       if (!(fishpond_or_options instanceof Fishpond)) {
@@ -149,7 +149,7 @@
       this.view.removeFavorite = this.removeFavorite;
       return this.initializeFish(pond, (function(_this) {
         return function(fish) {
-          var grouped, groupedArrays;
+          var element, grouped, groupedArrays, _j, _len1, _ref1;
           _this.view.fish = ko.observableArray(fish);
           _this.view.tags = ko.observableArray(pond.tags.map(function(tag) {
             return $.extend(tag, {
@@ -190,9 +190,14 @@
             slug: "community",
             value: 10
           });
-          _this.options.beforeApplyBindings(_this.view);
-          ko.applyBindings(_this.view);
-          _this.options.afterApplyBindings(_this.view);
+          _this.options.beforeApplyBindings(_this.view, _this.container);
+          _ref1 = _this.container;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            element = _ref1[_j];
+            console.log('[iFish Info] Applying dynamic bindings to ' + element.tagName + '#' + element.id + '.');
+            ko.applyBindings(_this.view, element);
+          }
+          _this.options.afterApplyBindings(_this.view, _this.container);
           return finished(pond);
         };
       })(this));

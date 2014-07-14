@@ -54,8 +54,8 @@ class root.IFish
       beforeLoadFavorite: (fish) -> fish
       beforeLoadFavorites: (ids) -> ids
       afterLoadFavorites: (favorites) -> favorites
-      beforeApplyBindings: (view) -> view
-      afterApplyBindings: (view) -> view
+      beforeApplyBindings: (view, container) -> view
+      afterApplyBindings: (view, container) -> view
       ready: (pond) -> pond
 
       # Metadata.
@@ -85,10 +85,10 @@ class root.IFish
 
     # Set up container and extract data.
     #
-    @container    = $ @options.containerSelector
-    @api_key      = @container.data 'api_key'
-    @pond_id      = @container.data 'pond_id'
-    @api_endpoint = @container.data 'api_endpoint'
+    @container    = if @options.containerSelector instanceof jQuery then @options.containerSelector else $ @options.containerSelector
+    @api_key      = @options.apiKey      || @container.data 'api_key'
+    @pond_id      = @options.pondId      || @container.data 'pond_id'
+    @api_endpoint = @options.apiEndpoint || @container.data 'api_endpoint'
 
     # Override default options from container data options.
     #
@@ -97,16 +97,19 @@ class root.IFish
     # Set up view elements.
     #
     @results = $ @options.resultsSelector, @container
-    @controls = $ @options.controlsSelector
-    @search = $ @options.searchSelector
+    @controls = $ @options.controlsSelector, @container
+    @search = $ @options.searchSelector, @container
+    
+    # Favorites do not need to be contained under the container.
+    #
     @favorites = $ @options.favoritesSelector
 
     # Warnings.
     #
-    console.log "[Warning] Could not find a results container under #{@results.selector}." if @results.length == 0
-    console.log "[Warning] Could not find an ifish controls container under #{@controls.selector}." if @controls.length == 0
-    console.log "[Warning] Could not find a search field under #{@search.selector}." if @search.length == 0
-    console.log "[Warning] Could not find a favorites container under #{@favorites.selector}." if @favorites.length == 0
+    console.log "[iFish Warning] Could not find a results container under #{@results.selector}." if @results.length == 0
+    console.log "[iFish Warning] Could not find an ifish controls container under #{@controls.selector}." if @controls.length == 0
+    console.log "[iFish Warning] Could not find a search field under #{@search.selector}." if @search.length == 0
+    console.log "[iFish Warning] Could not find a favorites container under #{@favorites.selector}." if @favorites.length == 0
 
     # Add a knockout view model.
     # Update this to update the controls/fish.
@@ -197,9 +200,15 @@ class root.IFish
 
       # Trigger knockout.
       #
-      @options.beforeApplyBindings @view
-      ko.applyBindings @view
-      @options.afterApplyBindings @view
+      @options.beforeApplyBindings @view, @container
+      #
+      # Apply the bindings to the enclosing containers.
+      #
+      for element in @container
+        console.log '[iFish Info] Applying dynamic bindings to ' + element.tagName + '#' + element.id + '.'
+        ko.applyBindings @view, element
+      #
+      @options.afterApplyBindings @view, @container
 
       # Call finished callback.
       #
