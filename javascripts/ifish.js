@@ -448,13 +448,14 @@
         },
         highlighter: (function(_this) {
           return function(item) {
-            var fish, _j, _len1;
+            var fish, highlighted, _j, _len1;
             fish = _this.mappedFish[item];
+            highlighted = format;
             for (_j = 0, _len1 = searchedFields.length; _j < _len1; _j++) {
               field = searchedFields[_j];
-              format = format.replace(/%s/, fish[field]);
+              highlighted = highlighted.replace(/%s/, fish[field]);
             }
-            return format;
+            return highlighted;
           };
         })(this),
         updater: (function(_this) {

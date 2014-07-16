@@ -438,9 +438,10 @@ class root.IFish
         items
       highlighter: (item) =>
         fish = @mappedFish[item]
+        highlighted = format
         for field in searchedFields
-          format = format.replace /%s/, fish[field]
-        format
+          highlighted = highlighted.replace /%s/, fish[field]
+        highlighted
       updater: (item) =>
         fish = @mappedFish[item]
         @controls.find("input[name^='query[filters]']:checkbox").removeAttr 'checked'
