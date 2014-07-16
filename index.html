@@ -232,7 +232,18 @@
     <!-- Code for the data bindings (data-bind) in the fish/favorites/controls. -->
     <script src="./javascripts/vendor/knockout.js" type="text/javascript"></script>
     <script type="text/javascript">
+      // Vanilla iFish.
+      //
       new IFish();
+      
+      // With a multifield search.
+      //
+      // new IFish({
+      //   search: {
+      //     fields: ['title', 'id'],
+      //     format: '%s (%s)'
+      //   }
+      // });
     </script>
   </body>
 </html>
