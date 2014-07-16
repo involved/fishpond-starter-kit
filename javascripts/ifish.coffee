@@ -400,23 +400,47 @@ class root.IFish
   #
   installSearchField: (pond) ->
     mappedFish = @mappedFish;
-
+    
+    format = []
+    searchedFields = @options.search && @options.search.fields || ['title']
+    if @options.search && @options.search.format
+      format = @options.search.format
+    else
+      for field in searchedFields
+        format.push '%s'
+      format = format.join ', '
+    
     typeaheadOptions = $.extend
       items: 5
       source: @fishIds
-      matcher: (item) -> return mappedFish[item].title.score(this.query) > 0.1
+      matcher: (item) ->
+        fish = mappedFish[item]
+        result = false
+        for field in searchedFields
+          result ||= fish[field].score(this.query) > 0.1
+        result
       sorter: (items) ->
         query = this.query
         items.sort (item1, item2) =>
-          score1 = mappedFish[item1].title.score query
-          score2 = mappedFish[item2].title.score query
+          fish1  = mappedFish[item1]
+          fish2  = mappedFish[item2]
+          score1 = 0
+          score2 = 0
+          for field in searchedFields
+            score1 += fish1[field].score(query)
+          for field in searchedFields
+            score2 += fish2[field].score(query)
           if score1 > score2
             -1
           if score1 < score2
             1
           0
         items
-      highlighter: (item) => return @mappedFish[item].title
+      highlighter: (item) =>
+        fish = @mappedFish[item]
+        for field in searchedFields
+          format = format.replace /%s/, fish[field]
+        format
       updater: (item) =>
         fish = @mappedFish[item]
         @controls.find("input[name^='query[filters]']:checkbox").removeAttr 'checked'
