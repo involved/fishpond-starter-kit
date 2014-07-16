@@ -391,7 +391,7 @@
     };
 
     IFish.prototype.installSearchField = function(pond) {
-      var field, format, mappedFish, searchedFields, typeaheadOptions, _i, _len;
+      var field, format, from, mappedFish, searchedFields, typeaheadOptions, _i, _len;
       mappedFish = this.mappedFish;
       format = [];
       searchedFields = this.options.search && this.options.search.fields || ['title'];
@@ -404,6 +404,9 @@
         }
         format = format.join(', ');
       }
+      from = function(fish, name) {
+        return fish[name] || fish.metadata[name];
+      };
       typeaheadOptions = $.extend({
         items: 5,
         source: this.fishIds,
@@ -413,7 +416,7 @@
           result = false;
           for (_j = 0, _len1 = searchedFields.length; _j < _len1; _j++) {
             field = searchedFields[_j];
-            result || (result = fish[field].score(this.query) > 0.1);
+            result || (result = from(fish, field).score(this.query) > 0.1);
           }
           return result;
         },
@@ -422,18 +425,15 @@
           query = this.query;
           items.sort((function(_this) {
             return function(item1, item2) {
-              var fish1, fish2, score1, score2, _j, _k, _len1, _len2;
+              var fish1, fish2, score1, score2, _j, _len1;
               fish1 = mappedFish[item1];
               fish2 = mappedFish[item2];
               score1 = 0;
               score2 = 0;
               for (_j = 0, _len1 = searchedFields.length; _j < _len1; _j++) {
                 field = searchedFields[_j];
-                score1 += fish1[field].score(query);
-              }
-              for (_k = 0, _len2 = searchedFields.length; _k < _len2; _k++) {
-                field = searchedFields[_k];
-                score2 += fish2[field].score(query);
+                score1 += from(fish1, field).score(query);
+                score2 += from(fish2, field).score(query);
               }
               if (score1 > score2) {
                 -1;
@@ -453,7 +453,7 @@
             highlighted = format;
             for (_j = 0, _len1 = searchedFields.length; _j < _len1; _j++) {
               field = searchedFields[_j];
-              highlighted = highlighted.replace(/%s/, fish[field]);
+              highlighted = highlighted.replace(/%s/, from(fish, field));
             }
             return highlighted;
           };

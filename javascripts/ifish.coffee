@@ -410,6 +410,9 @@ class root.IFish
         format.push '%s'
       format = format.join ', '
     
+    from = (fish, name) ->
+      fish[name] || fish.metadata[name]
+      
     typeaheadOptions = $.extend
       items: 5
       source: @fishIds
@@ -417,7 +420,7 @@ class root.IFish
         fish = mappedFish[item]
         result = false
         for field in searchedFields
-          result ||= fish[field].score(this.query) > 0.1
+          result ||= from(fish, field).score(this.query) > 0.1
         result
       sorter: (items) ->
         query = this.query
@@ -427,9 +430,8 @@ class root.IFish
           score1 = 0
           score2 = 0
           for field in searchedFields
-            score1 += fish1[field].score(query)
-          for field in searchedFields
-            score2 += fish2[field].score(query)
+            score1 += from(fish1, field).score(query)
+            score2 += from(fish2, field).score(query)
           if score1 > score2
             -1
           if score1 < score2
@@ -440,7 +442,7 @@ class root.IFish
         fish = @mappedFish[item]
         highlighted = format
         for field in searchedFields
-          highlighted = highlighted.replace /%s/, fish[field]
+          highlighted = highlighted.replace /%s/, from(fish, field)
         highlighted
       updater: (item) =>
         fish = @mappedFish[item]
