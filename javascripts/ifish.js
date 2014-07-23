@@ -47,6 +47,9 @@
         fishpondResultsUpdated: this.fishpondResultsUpdated,
         fishpondLoading: this.fishpondLoading,
         fishpondReady: this.fishpondReady,
+        pondReady: function(pond) {
+          return pond;
+        },
         afterInitialisingFavorites: function(favorites) {
           return favorites;
         },
@@ -124,6 +127,7 @@
         this.fishpond.loading(this.options.fishpondLoading);
         this.fishpond.ready((function(_this) {
           return function(pond) {
+            _this.options.pondReady(pond);
             _this.installControls(pond, _this.options.fishpondReady);
             return _this.options.ready(pond);
           };

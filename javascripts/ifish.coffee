@@ -46,6 +46,7 @@ class root.IFish
       #
       # Favorites.
       #
+      pondReady: (pond) -> pond
       afterInitialisingFavorites: (favorites) -> favorites
       beforeAddFavorite: (fish) -> fish
       afterAddFavorite: (fish) -> fish
@@ -122,6 +123,7 @@ class root.IFish
       @fishpond = new Fishpond @api_key, @options
       @fishpond.loading @options.fishpondLoading
       @fishpond.ready (pond) =>
+        @options.pondReady pond
         @installControls pond, @options.fishpondReady
         @options.ready pond
       @fishpond.resultsUpdated @options.fishpondResultsUpdated
@@ -160,7 +162,7 @@ class root.IFish
       #
       #
       @view.fish = ko.observableArray fish
-
+      
       # Controls
       #
       @view.tags = ko.observableArray pond.tags.map (tag) -> $.extend tag, value: 10
