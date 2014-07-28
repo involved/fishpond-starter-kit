@@ -26,6 +26,9 @@
       this.addFavorite = __bind(this.addFavorite, this);
       this.loadFavorites = __bind(this.loadFavorites, this);
       this.installControls = __bind(this.installControls, this);
+      this.warn = __bind(this.warn, this);
+      this.info = __bind(this.info, this);
+      this.puts = __bind(this.puts, this);
       this.options = {
         containerSelector: '#ifish',
         resultsSelector: 'ul.results',
@@ -110,16 +113,19 @@
       this.search = $(this.options.searchSelector, this.container);
       this.favorites = $(this.options.favoritesSelector);
       if (this.results.length === 0) {
-        console.log("[iFish Warning] Could not find a results container under " + this.results.selector + ".");
+        this.warn("Could not find a results container under " + this.results.selector + ".");
+      }
+      if (this.results.length === 0) {
+        this.warn("Could not find a results container under " + this.results.selector + ".");
       }
       if (this.controls.length === 0) {
-        console.log("[iFish Warning] Could not find an ifish controls container under " + this.controls.selector + ".");
+        this.warn("Could not find an ifish controls container under " + this.controls.selector + ".");
       }
       if (this.search.length === 0) {
-        console.log("[iFish Warning] Could not find a search field under " + this.search.selector + ".");
+        this.warn("Could not find a search field under " + this.search.selector + ".");
       }
       if (this.favorites.length === 0) {
-        console.log("[iFish Warning] Could not find a favorites container under " + this.favorites.selector + ".");
+        this.warn("Could not find a favorites container under " + this.favorites.selector + ".");
       }
       this.view = {};
       if (!(fishpond_or_options instanceof Fishpond)) {
@@ -136,6 +142,18 @@
         this.fishpond.init(this.pond_id);
       }
     }
+
+    IFish.prototype.puts = function(message) {
+      return console.log("[iFish] " + message);
+    };
+
+    IFish.prototype.info = function(message) {
+      return this.puts("Info: " + message);
+    };
+
+    IFish.prototype.warn = function(message) {
+      return this.puts("Warning: " + message);
+    };
 
     IFish.prototype.installControls = function(pond, finished) {
       var fish, _i, _len, _ref;
@@ -198,7 +216,7 @@
           _ref1 = _this.container;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             element = _ref1[_j];
-            console.log('[iFish Info] Applying dynamic bindings to ' + element.tagName + '#' + element.id + '.');
+            _this.info("Applying dynamic bindings to " + element.tagName + "#" + element.id + ".");
             ko.applyBindings(_this.view, element);
           }
           _this.options.afterApplyBindings(_this.view, _this.container);

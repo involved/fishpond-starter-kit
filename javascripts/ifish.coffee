@@ -107,10 +107,11 @@ class root.IFish
 
     # Warnings.
     #
-    console.log "[iFish Warning] Could not find a results container under #{@results.selector}." if @results.length == 0
-    console.log "[iFish Warning] Could not find an ifish controls container under #{@controls.selector}." if @controls.length == 0
-    console.log "[iFish Warning] Could not find a search field under #{@search.selector}." if @search.length == 0
-    console.log "[iFish Warning] Could not find a favorites container under #{@favorites.selector}." if @favorites.length == 0
+    @warn "Could not find a results container under #{@results.selector}." if @results.length == 0
+    @warn "Could not find a results container under #{@results.selector}." if @results.length == 0
+    @warn "Could not find an ifish controls container under #{@controls.selector}." if @controls.length == 0
+    @warn "Could not find a search field under #{@search.selector}." if @search.length == 0
+    @warn "Could not find a favorites container under #{@favorites.selector}." if @favorites.length == 0
 
     # Add a knockout view model.
     # Update this to update the controls/fish.
@@ -128,6 +129,12 @@ class root.IFish
         @options.ready pond
       @fishpond.resultsUpdated @options.fishpondResultsUpdated
       @fishpond.init @pond_id
+
+  # Debug.
+  #
+  puts: (message) => console.log "[iFish] #{message}"
+  info: (message) => @puts "Info: #{message}"
+  warn: (message) => @puts "Warning: #{message}"
 
   # Installs iFish controls based on the given pond.
   #
@@ -207,7 +214,7 @@ class root.IFish
       # Apply the bindings to the enclosing containers.
       #
       for element in @container
-        console.log '[iFish Info] Applying dynamic bindings to ' + element.tagName + '#' + element.id + '.'
+        @info "Applying dynamic bindings to #{element.tagName}##{element.id}."
         ko.applyBindings @view, element
       #
       @options.afterApplyBindings @view, @container
@@ -298,10 +305,10 @@ class root.IFish
       fish
 
   sliderFor: (token) ->
-    @controls.find ".slider[data-target='query[tags][" + token + "]']"
+    @controls.find ".slider[data-target='query[tags][#{token}]']"
 
   filterFor: (token) ->
-    @controls.find "input[name='query[filters][" + token + "]']"
+    @controls.find "input[name='query[filters][#{token}]']"
 
   # Let isotope know to update the view.
   #
