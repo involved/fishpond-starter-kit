@@ -23,6 +23,7 @@
       this.setInputValues = __bind(this.setInputValues, this);
       this.initializeFish = __bind(this.initializeFish, this);
       this.removeFavorite = __bind(this.removeFavorite, this);
+      this.isFavorite = __bind(this.isFavorite, this);
       this.addFavorite = __bind(this.addFavorite, this);
       this.loadFavorites = __bind(this.loadFavorites, this);
       this.installControls = __bind(this.installControls, this);
@@ -244,6 +245,14 @@
     };
 
     IFish.prototype.addFavorite = function(fish) {
+      if (!isFavorite(fish)) {
+        fish = this.options.beforeAddFavorite(fish);
+        this.view.favorites.push(fish);
+        return this.options.afterAddFavorite(fish);
+      }
+    };
+
+    IFish.prototype.isFavorite = function(fish) {
       var found;
       found = false;
       $.each(this.view.favorites(), function(i, favorite) {
@@ -251,11 +260,7 @@
           return found = true;
         }
       });
-      if (!found) {
-        fish = this.options.beforeAddFavorite(fish);
-        this.view.favorites.push(fish);
-        return this.options.afterAddFavorite(fish);
-      }
+      return found;
     };
 
     IFish.prototype.removeFavorite = function(fish) {

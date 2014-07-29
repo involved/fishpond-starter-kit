@@ -247,13 +247,21 @@ class root.IFish
   # @param {Fishpond::Fish} fish A fish
   #
   addFavorite: (fish) =>
-    found = false
-    $.each @view.favorites(), (i, favorite) ->
-      found = true if favorite.id == fish.id
-    unless found
+    unless isFavorite fish
       fish = @options.beforeAddFavorite fish
       @view.favorites.push fish
       @options.afterAddFavorite fish
+  
+  # Is a fish a favorite?
+  #
+  # @method isFavorite
+  # @param {Fishpond::Fish} fish A fish
+  #
+  isFavorite: (fish) =>
+    found = false
+    $.each @view.favorites(), (i, favorite) ->
+      found = true if favorite.id == fish.id
+    found
 
   # Removes a fish from the favorites.
   #
