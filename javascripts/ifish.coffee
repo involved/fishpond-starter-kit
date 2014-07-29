@@ -220,9 +220,19 @@ class root.IFish
       #
       @options.afterApplyBindings @view, @container
 
+      # Redraw all fish.
+      #
+      @refresh fish
+
       # Call finished callback.
       #
       finished pond
+
+  #
+  #
+  refresh: (fish) ->
+    $.each fish, (_, f) ->
+      f.visible.notifySubscribers()
 
   # Loads favorites from local storage.
   #
@@ -260,8 +270,9 @@ class root.IFish
   #
   isFavorite: (fish) =>
     found = false
-    $.each @view.favorites(), (i, favorite) ->
-      found = true if favorite.id == fish.id
+    if @view.favorites
+      $.each @view.favorites(), (i, favorite) ->
+        found = true if favorite.id == fish.id
     found
 
   # Removes a fish from the favorites.
@@ -283,6 +294,19 @@ class root.IFish
   #
   localStorageKey: (pond, type) -> "ifish-#{pond.id}-#{type}"
 
+  #
+  #
+  addStarterKitFunctions: (fish) =>
+    fish.score = ko.observable 100
+    fish.visible = ko.observable 1
+    fish.fromMetadata = ko.computed ->
+      # Use dummy observable to trigger computable recalculation.
+      #
+      fish.visible() && fish.metadata
+    fish.isFavorite = ko.computed =>
+      fish.visible() && @isFavorite fish
+      
+
   # Initialize the fish.
   #
   initializeFish: (pond, afterInitialize) =>
@@ -290,12 +314,7 @@ class root.IFish
     fishWithMetadata = []
     pond.fish.map (fish) =>
       callback = (fish) => # Empty.
-        fish.score = ko.observable 100
-        fish.visible = ko.observable 1
-        fish.fromMetadata = ko.computed ->
-          # Use dummy observable to trigger computable recalculation.
-          #
-          fish.visible() && fish.metadata
+        @addStarterKitFunctions fish
         fishWithMetadata.push fish
         afterInitialize fishWithMetadata if fishWithMetadata.length == pondSize
       if @options.metadata

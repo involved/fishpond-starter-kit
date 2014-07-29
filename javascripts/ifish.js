@@ -22,6 +22,7 @@
       this.setSortValues = __bind(this.setSortValues, this);
       this.setInputValues = __bind(this.setInputValues, this);
       this.initializeFish = __bind(this.initializeFish, this);
+      this.addStarterKitFunctions = __bind(this.addStarterKitFunctions, this);
       this.removeFavorite = __bind(this.removeFavorite, this);
       this.isFavorite = __bind(this.isFavorite, this);
       this.addFavorite = __bind(this.addFavorite, this);
@@ -222,9 +223,16 @@
             ko.applyBindings(_this.view, element);
           }
           _this.options.afterApplyBindings(_this.view, _this.container);
+          _this.refresh(fish);
           return finished(pond);
         };
       })(this));
+    };
+
+    IFish.prototype.refresh = function(fish) {
+      return $.each(fish, function(_, f) {
+        return f.visible.notifySubscribers();
+      });
     };
 
     IFish.prototype.loadFavorites = function(pond, fish) {
@@ -256,11 +264,13 @@
     IFish.prototype.isFavorite = function(fish) {
       var found;
       found = false;
-      $.each(this.view.favorites(), function(i, favorite) {
-        if (favorite.id === fish.id) {
-          return found = true;
-        }
-      });
+      if (this.view.favorites) {
+        $.each(this.view.favorites(), function(i, favorite) {
+          if (favorite.id === fish.id) {
+            return found = true;
+          }
+        });
+      }
       return found;
     };
 
@@ -276,6 +286,19 @@
       return "ifish-" + pond.id + "-" + type;
     };
 
+    IFish.prototype.addStarterKitFunctions = function(fish) {
+      fish.score = ko.observable(100);
+      fish.visible = ko.observable(1);
+      fish.fromMetadata = ko.computed(function() {
+        return fish.visible() && fish.metadata;
+      });
+      return fish.isFavorite = ko.computed((function(_this) {
+        return function() {
+          return fish.visible() && _this.isFavorite(fish);
+        };
+      })(this));
+    };
+
     IFish.prototype.initializeFish = function(pond, afterInitialize) {
       var fishWithMetadata, pondSize;
       pondSize = pond.fish.length;
@@ -284,11 +307,7 @@
         return function(fish) {
           var callback;
           callback = function(fish) {
-            fish.score = ko.observable(100);
-            fish.visible = ko.observable(1);
-            fish.fromMetadata = ko.computed(function() {
-              return fish.visible() && fish.metadata;
-            });
+            _this.addStarterKitFunctions(fish);
             fishWithMetadata.push(fish);
             if (fishWithMetadata.length === pondSize) {
               return afterInitialize(fishWithMetadata);
