@@ -155,9 +155,10 @@ class root.IFish
     #
     @view.name = ko.observable pond.name
 
-    # Hook view model functions into the iFish lib.
+    # Hook/expose view model functions into the iFish lib.
     #
     @view.setSortValues = @setSortValues
+    @view.isFavorite = @isFavorite
     @view.addFavorite = @addFavorite
     @view.removeFavorite = @removeFavorite
 
@@ -247,7 +248,7 @@ class root.IFish
   # @param {Fishpond::Fish} fish A fish
   #
   addFavorite: (fish) =>
-    unless isFavorite fish
+    unless @isFavorite fish
       fish = @options.beforeAddFavorite fish
       @view.favorites.push fish
       @options.afterAddFavorite fish
@@ -269,9 +270,10 @@ class root.IFish
   # @param {Fishpond::Fish} fish A fish
   #
   removeFavorite: (fish) =>
-    fish = @options.beforeRemoveFavorite fish
-    @view.favorites.remove fish
-    @options.afterRemoveFavorite fish
+    if @isFavorite fish
+      fish = @options.beforeRemoveFavorite fish
+      @view.favorites.remove fish
+      @options.afterRemoveFavorite fish
 
   # Generate a localStorage key for the given pond and type.
   #

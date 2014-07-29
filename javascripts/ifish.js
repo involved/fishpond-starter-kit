@@ -168,6 +168,7 @@
       }
       this.view.name = ko.observable(pond.name);
       this.view.setSortValues = this.setSortValues;
+      this.view.isFavorite = this.isFavorite;
       this.view.addFavorite = this.addFavorite;
       this.view.removeFavorite = this.removeFavorite;
       return this.initializeFish(pond, (function(_this) {
@@ -245,7 +246,7 @@
     };
 
     IFish.prototype.addFavorite = function(fish) {
-      if (!isFavorite(fish)) {
+      if (!this.isFavorite(fish)) {
         fish = this.options.beforeAddFavorite(fish);
         this.view.favorites.push(fish);
         return this.options.afterAddFavorite(fish);
@@ -264,9 +265,11 @@
     };
 
     IFish.prototype.removeFavorite = function(fish) {
-      fish = this.options.beforeRemoveFavorite(fish);
-      this.view.favorites.remove(fish);
-      return this.options.afterRemoveFavorite(fish);
+      if (this.isFavorite(fish)) {
+        fish = this.options.beforeRemoveFavorite(fish);
+        this.view.favorites.remove(fish);
+        return this.options.afterRemoveFavorite(fish);
+      }
     };
 
     IFish.prototype.localStorageKey = function(pond, type) {
