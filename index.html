@@ -110,7 +110,12 @@
                           <!-- <small data-bind='text: metadata.rating'></small> -->
 
                           <!-- Use class "favorite" in a fish to make element favoritable when clicked. -->
+                          <!-- ko if: !$data.isFavorite() -->
                           <small><a class="favorite" data-bind='click: $root.addFavorite, clickBubble: false'>Favorite</a></small>
+                          <!-- /ko -->
+                          <!-- ko if: $data.isFavorite() -->
+                          <small><a class="favorite" data-bind='click: $root.removeFavorite, clickBubble: false'>Unfavorite</a></small>
+                          <!-- /ko -->
                         </div>
                         <!-- Inside here is the fish's modal template to change as you wish. Based on bootstrap modal. -->
                         <div class="dialog modal fade" data-backdrop="true" data-keyboard="true" data-show="true">
