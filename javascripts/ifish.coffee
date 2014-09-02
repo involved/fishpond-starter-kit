@@ -526,7 +526,7 @@ class root.IFish
 
     @controls.find("input[name*='tags']").each ->
       if $(this).siblings("input:checked").length == 0
-        tags[$(this).data('slug')] = false
+        tags[$(this).data('slug')] = 0
       else
         tags[$(this).data('slug')] = $(this).val()
 

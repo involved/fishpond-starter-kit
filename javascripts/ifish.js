@@ -545,7 +545,7 @@
       filters = {};
       this.controls.find("input[name*='tags']").each(function() {
         if ($(this).siblings("input:checked").length === 0) {
-          return tags[$(this).data('slug')] = false;
+          return tags[$(this).data('slug')] = 0;
         } else {
           return tags[$(this).data('slug')] = $(this).val();
         }
