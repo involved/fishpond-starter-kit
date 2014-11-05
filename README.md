@@ -104,3 +104,4 @@ This sets everything up. You can pass it the following options (here shown with 
       fishpondReady: @fishpondReady, # Callback when fishpond is ready.
 
       metadata: false, # Initially load metadata (very slow on large ponds).
+      include_metadata: false # Load metadata with the fish (needs to be enabled on the server)

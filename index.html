@@ -239,16 +239,18 @@
     <script type="text/javascript">
       // Vanilla iFish.
       //
-      new IFish();
+      // new IFish();
       
       // With a multifield search.
       //
-      // new IFish({
-      //   search: {
-      //     fields: ['title', 'id'],
-      //     format: '%s (%s)'
-      //   }
-      // });
+      new IFish({
+        metadata: true,
+        include_metadata: true,
+        search: {
+          fields: ['title', 'description'],
+          format: '%s (%s)'
+        }
+      });
     </script>
   </body>
 </html>
